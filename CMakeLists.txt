@@ -10,3 +10,5 @@ add_subdirectory(src/Physics/include)
 add_subdirectory(src/Physics/CollisionSystem)
 add_subdirectory(src/Graphics)
 add_subdirectory(src/Components)
+
+find_package(SDL2 REQUIRED)
