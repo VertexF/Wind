@@ -3,8 +3,5 @@ add_library(Application_Lib STATIC
 						 Camera.h Camera.cpp
 						 Game.h Game.cpp
 						 Timer.h Timer.h)
-
-
+						 
 add_executable(Wind main.cpp)
-
-

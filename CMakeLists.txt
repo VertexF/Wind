@@ -18,6 +18,10 @@ find_package(SDL2 REQUIRED COMPONENTS main PATH SDL2_LIB)
 
 
 include_directories(Wind ${SDL2_INCLUDE_DIR})
+message(STATUS "${SDL2_LIB}")
+message(STATUS "Bro")
+message(STATUS ${SDL2_LIB})
+
 
 add_subdirectory(src)
 add_subdirectory(src/Physics/include)
@@ -25,4 +29,5 @@ add_subdirectory(src/Physics/CollisionSystem)
 add_subdirectory(src/Graphics)
 add_subdirectory(src/Components)
 
-target_link_libraries(Wind PRIVATE ${SDL2_LIB})
+
+target_link_libraries(Wind PRIVATE SDL2 SDL2main)
