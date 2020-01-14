@@ -12,8 +12,8 @@
 #include <glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include <SDL.h>
-#include <SDL_opengl.h>
+#include "SDL.h"
+#include "SDL_opengl.h"
 #include <IL/il.h>
 #include <IL/ilu.h>
 #include <SDL_image.h>
