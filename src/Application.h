@@ -16,7 +16,6 @@
 #include "SDL_opengl.h"
 #include <IL/il.h>
 #include <IL/ilu.h>
-#include <SDL_image.h>
 
 #include "Physics/include/Wind.h"
 #include "Physics/CollisionSystem/contact.h"

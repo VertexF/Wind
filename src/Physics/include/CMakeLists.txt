@@ -15,4 +15,4 @@ add_library(Core_Lib STATIC
 						Wind.h
 						world.h world.cpp)
 
-target_link_libraries(Wind PUBLIC Core_Lib)
+target_link_libraries(Wind PRIVATE Core_Lib)
