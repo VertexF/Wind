@@ -249,7 +249,7 @@ endif()
     # endif()
     # unset(sdl2_threads_not_found)
   # endif()
- # endif()
+#endif()
 
 # MinGW needs an additional link flag, -mwindows
 # It's total link flags should look like -lmingw32 -lSDL2main -lSDL2 -mwindows
@@ -280,9 +280,9 @@ if(SDL2_LIBRARY)
   # For threads, as mentioned Apple doesn't need this.
   # In fact, there seems to be a problem if I used the Threads package
   # and try using this line, so I'm just skipping it entirely for OS X.
-  if(NOT APPLE)
-    set(SDL2_LIBRARIES ${SDL2_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-  endif()
+  #if(NOT APPLE)
+    #set(SDL2_LIBRARIES ${SDL2_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+  #endif()
 
   # For MinGW library
   if(MINGW)
@@ -344,11 +344,11 @@ if(SDL2_FOUND)
       # For more details, please see above.
       set_property(TARGET SDL2::Core APPEND PROPERTY
                    INTERFACE_LINK_OPTIONS "-framework Cocoa")
-    else()
+    #else()
       # For threads, as mentioned Apple doesn't need this.
       # For more details, please see above.
-      set_property(TARGET SDL2::Core APPEND PROPERTY
-                   INTERFACE_LINK_LIBRARIES Threads::Threads)
+      #set_property(TARGET SDL2::Core APPEND PROPERTY
+                   #INTERFACE_LINK_LIBRARIES Threads::Threads)
     endif()
   endif()
 

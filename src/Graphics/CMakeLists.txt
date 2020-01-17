@@ -12,5 +12,3 @@ add_library(Graphics_Lib STATIC
 						ShaderProgram2D.h ShaderProgram2D.cpp
 						SpriteSheet.h SpriteSheet.cpp
 						Texture.h Texture.cpp)
-
-target_link_libraries(Wind PUBLIC Graphics_Lib)

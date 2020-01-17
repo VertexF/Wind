@@ -14,5 +14,3 @@ add_library(Core_Lib STATIC
 						Random.h Random.cpp
 						Wind.h
 						world.h world.cpp)
-
-target_link_libraries(Wind PRIVATE Core_Lib)

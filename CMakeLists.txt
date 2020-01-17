@@ -31,12 +31,13 @@ find_package(DevIL REQUIRED)
 
 include_directories(${SDL2_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS} ${IL_INCLUDE_DIR})
 
-add_subdirectory(src)
-add_subdirectory(src/Physics/include)
-add_subdirectory(src/Physics/CollisionSystem)
-add_subdirectory(src/Graphics)
-add_subdirectory(src/Components)
+#add_subdirectory(src)
+#add_subdirectory(src/Physics/include)
+#add_subdirectory(src/Physics/CollisionSystem)
+#add_subdirectory(src/Graphics)
+#add_subdirectory(src/Components)
 
 add_executable(Wind src/main.cpp)
 
+#target_link_libraries(Wind PRIVATE Application_Lib Core_Lib Collision_Lib Graphics_Lib Component_Lib)
 target_link_libraries(Wind PRIVATE SDL2::Core SDL2::Main GLEW::GLEW ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES})
