@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 #include <assert.h>
-#include <glew.h>
+#include <GL/glew.h>
 #include <IL/il.h>
 #include <IL/ilu.h>
 #include <cstring>

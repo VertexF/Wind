@@ -103,8 +103,8 @@ void Application::Setup(const std::string& Title)
 
 				controllerSetup();
 
-				SDL_Surface *icon = Loadimage("res/icon.png");
-                SDL_SetWindowIcon(mWindow, icon);
+				//SDL_Surface *icon = Loadimage("res/icon.png");
+    //            SDL_SetWindowIcon(mWindow, icon);
             }
 
 
@@ -176,21 +176,21 @@ void Application::controllerSetup()
     }
 }
 
-SDL_Surface *Application::Loadimage(std::string filename)
-{
-    SDL_Surface *Temp = NULL;
-
-    Temp = IMG_Load(filename.c_str());
-    if(Temp != NULL)
-    {
-        return Temp;
-    }
-    else
-    {
-        std::cerr << "Image could not correctly loaded" << std::endl;
-        return nullptr;
-    }
-}
+//SDL_Surface *Application::Loadimage(std::string filename)
+//{
+//    //SDL_Surface *Temp = NULL;
+//
+//    //Temp = IMG_Load(filename.c_str());
+//    //if(Temp != NULL)
+//    //{
+//    //    return Temp;
+//    //}
+//    //else
+//    //{
+//    //    std::cerr << "Image could not correctly loaded" << std::endl;
+//    //    return nullptr;
+//    //}
+//}
 
 //LegacyGL setup of perspective.
 void Application::SetView()

@@ -14,6 +14,9 @@ namespace wind
     class EpsilonValue
     {
         public:
+            EpsilonValue() = delete;
+            EpsilonValue(const EpsilonValue& rhs) = delete;
+
             /**
              * Gets the current value of the sleep epsilon parameter.
              */
@@ -27,9 +30,7 @@ namespace wind
              */
             void setSleepEpsilon(const real &value){ sleepEpsilon = value; }
         private:
-            EpsilonValue();
-            ~EpsilonValue();
-            operator=(const EpsilonValue& epsilonValue);
+            ~EpsilonValue() {}
 
             /**
              * Holds the value for energy under which a body will be put to

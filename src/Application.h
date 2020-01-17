@@ -9,7 +9,7 @@
 #include <vector>
 #include <memory>
 
-#include <glew.h>
+#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "SDL.h"
@@ -58,7 +58,7 @@ class Application
 		void controllerSetup();
 
 		//This function just handles loading the image for the icon
-		SDL_Surface *Loadimage(std::string filename);
+		//SDL_Surface *Loadimage(std::string filename);
 
 		SDL_GLContext Context;
         SDL_Window* mWindow;

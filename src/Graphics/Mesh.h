@@ -1,7 +1,7 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include <glew.h>
+#include <GL/glew.h>
 
 #include "../Physics/include/Polygon.h"
 #include "OBJLoader.h"

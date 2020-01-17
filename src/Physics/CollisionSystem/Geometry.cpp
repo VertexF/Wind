@@ -37,7 +37,7 @@ wind::Vector3 Geometry::Barycentric(std::vector<wind::Vector3> Points, std::vect
     return result;
 }
 
-wind::Vector3 Geometry::Barycentric(std::vector<wind::Vector3> Points, wind::real &v, wind::real &u, wind::real &w)
+void Geometry::Barycentric(std::vector<wind::Vector3> Points, wind::real &v, wind::real &u, wind::real &w)
 {
     for(unsigned int i = 0; i < Points.size(); i++)
     {

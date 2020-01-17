@@ -3,7 +3,7 @@
 
 #include <string>
 #include <fstream>
-#include <glew.h>
+#include <GL/glew.h>
 #include <GL/glu.h>
 
 #include "../Physics/include/Core.h"

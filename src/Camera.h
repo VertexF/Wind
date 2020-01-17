@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <glew.h>
+#include <GL/glew.h>
 #include "Physics/include/Core.h"
 #include "Physics/include/Body.h"
 
