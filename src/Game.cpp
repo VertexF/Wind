@@ -1,9 +1,16 @@
 #include "Game.h"
 
+#include "Components/Block.h"
+#include "Components/Plane.h"
+#include "Components/Player.h"
+
+#include "Graphics/ShaderProgram3D.h"
+
 Game::Game() : RigidBodyApplication("Cube Game"),
 	cameraRot(0.0, 0.0, 0.0, 0.0),
 	running(true),
-	runOnce(false)
+	runOnce(false),
+	player1(std::make_shared<Player>(mRatio))
 {
 	textColour.r = 1.0f;
 	textColour.g = 0.5f;
@@ -22,15 +29,13 @@ Game::Game() : RigidBodyApplication("Cube Game"),
 	//Important when adding another cude make sure that you increment this number in the for loop.
 	for(unsigned int i = 0; i < NUM_OF_CUBES; i++)
 	{
-		objects.push_back(new Block());
+		objects.emplace_back(std::make_shared<Block>());
 	}
 
 	for(unsigned int i = 0; i < NUM_OF_PLANES; i++)
     {
-        planes.push_back(new Wall());
+        planes.emplace_back(std::make_shared<Wall>());
     }
-
-	player1.push_back(new Player(mRatio));
 
 	//Reset need to be called before meshes are created
 	reset();
@@ -126,8 +131,8 @@ void Game::loadMeshes()
         reg.add(planes.at(i)->getMesh());
 	}
 
-    player1[0]->loadMesh("res/cube3.obj");
-	reg.add(player1[0]->getMesh());
+    player1->loadMesh("res/cube3.obj");
+	reg.add(player1->getMesh());
 }
 
 void Game::loadMedia()
@@ -155,7 +160,7 @@ void Game::resetGame()
 		objects.at(i)->setState(rand.RandomXZVector(50.0), wind::Vector3(2.0, 2.0, 2.0));
 	}
 
-	player1[0]->changePosition(wind::Vector3(0.0, 0.0, 0.0));
+	player1->changePosition(wind::Vector3(0.0, 0.0, 0.0));
 
     timeLeft = 100000;
 	blockCount = 0;
@@ -223,7 +228,7 @@ void Game::generateContacts()
 
 			if(!gameOver)
             {
-                if(wind::IntersectionTests::BoxAndBox(*player1[0], *objects.at(i)))
+                if(wind::IntersectionTests::BoxAndBox(*player1, *objects.at(i)))
                 {
                     //delete objects.at(i);
                     //objects.erase(objects.begin() + i);
@@ -252,7 +257,7 @@ void Game::updateObjects(wind::real duration)
 
 	planes.at(0)->update(duration);
 	planes.at(1)->update(duration);
-	player1[0]->update(duration);
+	player1->update(duration);
 }
 
 void Game::reset()
@@ -267,8 +272,8 @@ void Game::reset()
 	planes.at(0)->setState(wind::Vector3(0.0, -5.0, 0.0), wind::Vector3(0.0, 1.0, 0.0));
 	//planes.at(0)->initRotation(wind::Vector3::X, wind::Vector3(0.0, -5.0, 0.0), 10);
 	planes.at(1)->setState(wind::Vector3(0.0, -5.0, 0.0), wind::Vector3(0.0, 1.0, 0.0));
-	player1[0]->setState(wind::Vector3(0.0, 0.0, 0.0), wind::Vector3(0.5, 3.0, 0.5));
-	player1[0]->gravityOff();
+	player1->setState(wind::Vector3(0.0, 0.0, 0.0), wind::Vector3(0.5, 3.0, 0.5));
+	player1->gravityOff();
 
 	tester = "Find the blocks!";
 }
@@ -325,7 +330,7 @@ void Game::handleEvents()
 				break;
 
 			};
-			player1[0]->move(wind::Vector3(y, 0.0, x).moveSidewards(cameraRot));
+			player1->move(wind::Vector3(y, 0.0, x).moveSidewards(cameraRot));
 			break;
 
 			case SDL_KEYUP:
@@ -356,7 +361,7 @@ void Game::handleEvents()
 				default:
                 break;
 			};
-			player1[0]->move(wind::Vector3(x, 0.0, y));
+			player1->move(wind::Vector3(x, 0.0, y));
 			break;
 
 			case SDL_JOYAXISMOTION:
@@ -419,7 +424,7 @@ void Game::handleEvents()
 			}
 
 			cameraRot.normalise();
-			player1[0]->rotate(cameraRot);
+			player1->rotate(cameraRot);
 
 			SDL_WarpMouseInWindow(mWindow, MidX, MidY);
 		}
@@ -448,7 +453,7 @@ void Game::update()
 			trans.push_back(std::move(std::unique_ptr<wind::RigidBody>(planes.at(i)->getBody())));
 		}
 
-		trans.push_back(std::move(std::unique_ptr<wind::RigidBody>(player1.at(0)->getBody())));
+		trans.push_back(std::move(std::unique_ptr<wind::RigidBody>(player1->getBody())));
 	}
 
     updateObjects(Duration);
@@ -466,10 +471,10 @@ void Game::Display()
 	scene.bind();
 	scene.disableBlend();
 	scene.setTextColor(levelColour);
-	scene.updateCamera(player1[0]->getCamera());
+	scene.updateCamera(player1->getCamera());
 	blockTexture.bind(0);
 	scene.drawModels(objects);
-    scene.drawModels(player1);
+    scene.drawModel(player1);
 	blockTexture.unbind(0);
 	texture.bind(0);
 	scene.drawModels(planes);

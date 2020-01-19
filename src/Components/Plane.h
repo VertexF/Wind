@@ -18,7 +18,7 @@ class Wall : public wind::Plane
 		wind::RigidBody* getBody();
 		Mesh* getMesh();
 	private:
-		Mesh* mesh;
+		std::unique_ptr<Mesh> mesh;
 		//Only in this primitive that needs a body build here this is so we can render it.
 		//This has nothing to do with the physics.
 		//wind::RigidBody* body;

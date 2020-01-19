@@ -1,16 +1,14 @@
 #include "Plane.h"
 
-Wall::Wall()
+Wall::Wall() : mesh(std::make_unique<Mesh>())
 {
 	wind::Plane::body = new wind::RigidBody();
-	mesh = new Mesh();
 }
 
 Wall::~Wall()
 {
-	//delete body;
-	delete mesh;
 }
+
 void Wall::setState(const wind::Vector3& pos, wind::Vector3 dir)
 {
 	body->setPosition(pos);
@@ -68,5 +66,5 @@ wind::RigidBody* Wall::getBody()
 
 Mesh* Wall::getMesh()
 {
-	return mesh;
+	return mesh.get();
 }

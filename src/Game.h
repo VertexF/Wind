@@ -3,9 +3,6 @@
 
 #include "Application.h"
 
-#include "Components/Block.h"
-#include "Components/Plane.h"
-#include "Components/Player.h"
 #include "Components/LevelGeometry.h"
 
 #include "Graphics/Font.h"
@@ -17,6 +14,10 @@
 #include "Graphics/include/FontRect.h"
 
 using namespace wind;
+
+class Player;
+class Wall;
+class Block;
 
 namespace
 {
@@ -52,11 +53,9 @@ class Game : public RigidBodyApplication
 		//This is the mesh register for all the different meshes in the game.
 		MeshReg reg;
 		//These are the physical components of the games.
-		std::vector<Block*> objects;
-		//std::vector<std::unique_ptr<Block>> walls;
-		std::vector<Wall*> planes;
-		//std::vector<std::unique_ptr<LevelGeometry>> stuff;
-		std::vector<Player*> player1;
+		std::vector<std::shared_ptr<Block>> objects;
+		std::vector<std::shared_ptr<Wall>> planes;
+		std::shared_ptr<Player> player1;
 		//The instance shader is for binding and passing everything to the shaders.
 		ShaderProgram3D scene;
 		//The texture handles the texture, can be binded to other objects.

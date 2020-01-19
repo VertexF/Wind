@@ -27,7 +27,6 @@ class Player : public wind::Box
 
 		void changePosition(wind::Vector3 pos);
 		void draw();
-		void checker();
 		Mesh* getMesh();
 
 		wind::RigidBody* getBody();
