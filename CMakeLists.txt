@@ -20,6 +20,8 @@ set(ILUT_LIBRARIES "${CMAKE_SOURCE_DIR}../../../DevIL Windows SDK/lib/x64/Releas
 find_package(SDL2 REQUIRED COMPONENTS main PATH SDL2_LIB)
 find_package(GLEW REQUIRED)
 find_package(DevIL REQUIRED)
+find_package(OpenGL REQUIRED)
+
 
 include_directories(${SDL2_INCLUDE_DIR} ${GLEW_INCLUDE_DIRS} ${IL_INCLUDE_DIR})
 
@@ -31,5 +33,4 @@ add_subdirectory(src/Components)
 
 add_executable(Wind src/main.cpp)
 
-target_link_libraries(Wind PRIVATE Application_Lib Core_Lib Collision_Lib Graphics_Lib Component_Lib)
-target_link_libraries(Wind PRIVATE SDL2::Core SDL2::Main GLEW::GLEW ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES})
+target_link_libraries(Wind PRIVATE OpenGL::GL SDL2::Core SDL2::Main GLEW::GLEW ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} Application_Lib Core_Lib Collision_Lib Graphics_Lib Component_Lib)
