@@ -198,7 +198,7 @@ void Font::freeFont()
     newLine = 0;
 }
 
-void Font::renderText(textProgram* fontProgram2D, GLfloat x, GLfloat y, std::string text, FontRect* area, int align)
+void Font::renderText(ShaderProgram2D* fontProgram2D, GLfloat x, GLfloat y, std::string text, FontRect* area, int align)
 {
 	 //If there is a texture to render from
     if(getTextureID() != 0)
@@ -244,6 +244,9 @@ void Font::renderText(textProgram* fontProgram2D, GLfloat x, GLfloat y, std::str
                 dY = area->y + (area->h - stringHeight(text.c_str()));
             }
         }
+
+        //This resets the font for drawing.
+        fontProgram2D->setModelView(wind::Matrix4x4());
 
         //Move to draw position
 		wind::Matrix4x4 MV;
@@ -333,6 +336,8 @@ void Font::renderText(textProgram* fontProgram2D, GLfloat x, GLfloat y, std::str
         //Disable vertex and texture coordinate arrays
 		fontProgram2D->disableVertexPointer();
 		fontProgram2D->disableTexCoordPointer();
+
+		glBindTexture(GL_TEXTURE_2D, 0);
     }
 }
 

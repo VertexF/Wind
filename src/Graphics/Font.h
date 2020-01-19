@@ -44,7 +44,7 @@ class Font : public SpriteSheet
 		void freeFont();
 
 		//This is the function that is going to render the text
-		void renderText(textProgram* fontProgram2D, GLfloat x, GLfloat y, std::string text, FontRect* area, int align = FONT_TEXT_ALIGN_LEFT);
+		void renderText(ShaderProgram2D* fontProgram2D, GLfloat x, GLfloat y, std::string text, FontRect* area, int align = FONT_TEXT_ALIGN_LEFT);
 
 		GLfloat getLineHeight();
 		FontRect getAreaString(const std::string& text);

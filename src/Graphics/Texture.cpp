@@ -32,23 +32,6 @@ Texture::Texture(const std::string& filepath) : imageData(nullptr)
 
     VBOID = 0;
     IBOID = 0;
-
-	/*
-	loadTexture(filepath);
-
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-
-	stbi_image_free(imageData);
-	*/
 }
 
 Texture::~Texture()
@@ -57,44 +40,6 @@ Texture::~Texture()
 
 	freeVBO();
 }
-
-bool Texture::loadTexture(const std::string& filepath)
-{
-	/*
-	imageData = stbi_load(filepath.c_str(), &width, &height, &numCompents, 4);
-
-	if(imageData == nullptr)
-	{
-		std::cerr << "Texture loading has failed for texture: " << filepath << std::endl;
-		return false;
-	}
-	*/
-	return true;
-}
-
-void Texture::buildTexture(const std::string& filepath)
-{
-	/*
-	if(loadTexture(filepath) == false)
-	{
-		return;
-	}
-
-	glGenTextures(1, &textureID);
-	glBindTexture(GL_TEXTURE_2D, textureID);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, imageData);
-
-	stbi_image_free(imageData);
-	*/
-}
-
 
 void Texture::bind(unsigned int unit)
 {
@@ -111,7 +56,6 @@ void Texture::unbind(unsigned int unit)
 	glActiveTexture(GL_TEXTURE + unit);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
-
 
 bool Texture::loadTextureFromFile32(std::string filePath)
 {
@@ -317,6 +261,67 @@ bool Texture::loadTextureFromPixels32()
 	return success;
 }
 
+bool Texture::loadTextureCube(std::vector<std::string> filePaths)
+{
+    bool loadSuccess = false;
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+	//This will generate the ID we need for that image.
+	ILuint imgID = 0;
+	ilGenImages(1, &imgID);
+	ilBindImage(imgID);
+
+    for (GLuint i = 0; i < filePaths.size(); i++)
+    {
+        //Here we load the image and check if it worked.
+        ILboolean success = ilLoadImage(filePaths[i].c_str());
+        if(success == IL_TRUE)
+        {
+            //Next we need to try and convert the image to RGBA.
+            success = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+            if(success == IL_TRUE)
+            {
+                //Here we need to set up the dimensions.
+                GLuint imgWidth = (GLuint)ilGetInteger(IL_IMAGE_WIDTH);
+                GLuint imgHeight = (GLuint)ilGetInteger(IL_IMAGE_HEIGHT);
+
+                //Next we calculate the texture dimensions.
+                GLuint texWidth = powerOfTwo(imgWidth);
+                GLuint texHeight = powerOfTwo(imgHeight);
+
+                //Next we need to make sure that the texture is the right side.
+                if(imgWidth != texWidth || imgHeight != texHeight)
+                {
+                    //First we need to stick the texture to the top left size and resize it.
+                    iluImageParameter(ILU_PLACEMENT, ILU_UPPER_LEFT);
+                    iluEnlargeCanvas(static_cast<int>(texWidth), static_cast<int>(texHeight), 1);
+                }
+
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLuint*)ilGetData());
+            }
+        }
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+    GLenum error = glGetError();
+    if(error != GL_NO_ERROR)
+    {
+        std::cerr << "Error loading texture: " << gluErrorString(error) << std::endl;
+        return false;
+    }
+
+	pixelFormat = GL_RGBA;
+}
+
 bool Texture::loadTextureFromPixels32(GLuint* pixels, GLuint imgWidth, GLuint imgHeight, GLuint texWidth, GLuint texHeight)
 {
 	freeTexture();
@@ -347,7 +352,6 @@ bool Texture::loadTextureFromPixels32(GLuint* pixels, GLuint imgWidth, GLuint im
 		std::cerr << "Error loading texture from" << pixels32  << " pixels! " << gluErrorString(error) << std::endl;
 		return false;
 	}
-
 
 	//Then we start up the Vertex Object Buffer.
 	initVBO();
@@ -848,12 +852,12 @@ void Texture::initVBO()
         //Create VBO
         glGenBuffers(1, &VBOID);
         glBindBuffer(GL_ARRAY_BUFFER, VBOID);
-        glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(TextureVertex2D), vData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(TextureVertex2D), vData, GL_STATIC_DRAW);
 
         //Create IBO
         glGenBuffers(1, &IBOID);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBOID);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLuint), iData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, 4 * sizeof(GLuint), iData, GL_STATIC_DRAW);
 
         //Unbind buffers
         glBindBuffer(GL_ARRAY_BUFFER, 0);

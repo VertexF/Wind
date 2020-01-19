@@ -12,10 +12,10 @@
 /**
 	In this class we are going to be using a texture, cutting it up and rendering it streght to the camera viewport using different shaders.
 */
-class textProgram : public ShaderProgram
+class ShaderProgram2D : public ShaderProgram
 {
 	public:
-		textProgram();
+		ShaderProgram2D();
 
 		void enableBlend();
 		bool loadProgram();

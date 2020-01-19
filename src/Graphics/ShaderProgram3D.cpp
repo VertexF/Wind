@@ -9,9 +9,6 @@ ShaderProgram3D::ShaderProgram3D()
 	textColourLocation = 0;
 	textureUnitLocation = 0;
 
-	projectionMatrixLocation = 0;
-	modelViewMatrixLocation = 0;
-
 	modelLocation = 0;
 	cameraLocation = 0;
 
@@ -32,9 +29,6 @@ void ShaderProgram3D::disableBlend()
 bool ShaderProgram3D::loadProgram()
 {
     buildShaders("res/basicShader.vsh", "res/basicShader.fsh");
-    //glBindAttribLocation(programID, 0, "vertexPosition3D");
-	//glBindAttribLocation(programID, 1, "TexCoord");
-	//glBindAttribLocation(programID, 2, "normal");
     compileShaders();
 
     //Check for errors
@@ -44,16 +38,16 @@ bool ShaderProgram3D::loadProgram()
     {
 		std::cerr << "Error linking program: " << programID << std::endl;
 		printProgramLog(programID);
-        glDeleteShader(shaders[0]);
-        glDeleteShader(shaders[1]);
+        glDeleteShader(shaders[VERTEX_SHADER]);
+        glDeleteShader(shaders[FRAGMENT_SHADER]);
         glDeleteProgram(programID);
         programID = 0;
         return false;
     }
 
 	//Clean up excess shader references
-    glDeleteShader(shaders[0]);
-    glDeleteShader(shaders[1]);
+    glDeleteShader(shaders[VERTEX_SHADER]);
+    glDeleteShader(shaders[FRAGMENT_SHADER]);
 
     vertexPos3DLocation = glGetAttribLocation(programID, "vertexPosition3D");
 	if(vertexPos3DLocation == -1)
@@ -204,8 +198,6 @@ void ShaderProgram3D::updateModel(const std::vector<std::unique_ptr<wind::RigidB
 		//mesh.at(i)->Draw();
 	}
 }
-
-
 
 void ShaderProgram3D::setTextColor(ColourRGBA colour)
 {

@@ -17,14 +17,28 @@ void ShaderProgram::freeProgram()
 
 void ShaderProgram::addVertexShader(const std::string& filepath)
 {
-	shaders[0] = CreateShader(LoadShader(filepath), GL_VERTEX_SHADER);
-	glAttachShader(programID, shaders[0]);
+	shaders[VERTEX_SHADER] = loadShaderFromFile(filepath, GL_VERTEX_SHADER);
+	glAttachShader(programID, shaders[VERTEX_SHADER]);
+
+    if(shaders[VERTEX_SHADER] == 0)
+    {
+        glDeleteProgram(programID);
+        programID = 0;
+    }
 }
 
 void ShaderProgram::addFragmentShader(const std::string& filepath)
 {
-	shaders[1] = CreateShader(LoadShader(filepath), GL_FRAGMENT_SHADER);
-	glAttachShader(programID, shaders[1]);
+	shaders[FRAGMENT_SHADER] = loadShaderFromFile(filepath, GL_FRAGMENT_SHADER);
+	glAttachShader(programID, shaders[FRAGMENT_SHADER]);
+
+    //Check for errors
+    if(shaders[FRAGMENT_SHADER] == 0)
+    {
+        glDeleteShader(shaders[VERTEX_SHADER]);
+        glDeleteProgram(programID);
+        programID = 0;
+    }
 }
 
 void ShaderProgram::bind()
@@ -73,7 +87,7 @@ void ShaderProgram::printProgramLog(GLuint program)
 		if(infoLogLength > 0)
 		{
 			//Print Log
-			printf("%s\n", infoLog);
+            std::cerr << infoLog << std::endl;
 		}
 
 		//Deallocate string
@@ -81,7 +95,7 @@ void ShaderProgram::printProgramLog(GLuint program)
 	}
 	else
 	{
-		printf("Name %d is not a program\n", program);
+		std::cerr << "Name " << program <<  " is not a program." << std::endl;
 	}
 }
 
@@ -105,7 +119,7 @@ void ShaderProgram::printShaderLog(GLuint shader)
 		if(infoLogLength > 0)
 		{
 			//Print Log
-			printf("%s\n", infoLog);
+			std::cerr << infoLog << std::endl;
 		}
 
 		//Deallocate string
@@ -113,7 +127,7 @@ void ShaderProgram::printShaderLog(GLuint shader)
 	}
 	else
 	{
-		printf("Name %d is not a shader\n", shader);
+	    std::cerr << "Name " << shader <<  " is not a shader." << std::endl;
 	}
 }
 
@@ -135,62 +149,15 @@ void ShaderProgram::CheckShaderError(GLuint shader, GLuint flag, bool isProgram,
     {
         if(isProgram)
 		{
-            glGetProgramInfoLog(shader, sizeof(error), NULL, error);
+            glGetProgramInfoLog(shader, sizeof(error), nullptr, error);
 		}
         else
 		{
-            glGetShaderInfoLog(shader, sizeof(error), NULL, error);
+            glGetShaderInfoLog(shader, sizeof(error), nullptr, error);
 		}
 
         std::cerr << errorMessage << ": '" << error << "'" << std::endl;
     }
-}
-
-std::string ShaderProgram::LoadShader(const std::string& fileName)
-{
-    std::ifstream file;
-    file.open((fileName).c_str());
-
-    std::string output;
-    std::string line;
-
-    if(file.is_open())
-    {
-        while(file.good())
-        {
-            getline(file, line);
-			output.append(line + "\n");
-        }
-    }
-    else
-    {
-		std::cerr << "Unable to load shader: " << fileName << std::endl;
-    }
-
-    return output;
-}
-
-GLuint ShaderProgram::CreateShader(const std::string& text, GLenum shadertype)
-{
-	GLuint shader = glCreateShader(shadertype);
-
-	if(shader == 0)
-	{
-		std::cerr << "Shader could not be created " << std::endl;
-	}
-
-	const GLchar* shaderSourceChar[1];
-	GLint shaderSourceLength[1];
-	shaderSourceChar[0] = text.c_str();
-	shaderSourceLength[0] = text.length();
-
-	glShaderSource(shader, 1, shaderSourceChar, shaderSourceLength);
-
-	glCompileShader(shader);
-
-	CheckShaderError(shader, GL_COMPILE_STATUS, false, "Shader has failed to compile ");
-
-	return shader;
 }
 
 void ShaderProgram::compileShaders()
@@ -207,7 +174,7 @@ GLuint ShaderProgram::loadShaderFromFile(std::string path, GLenum shaderType)
 	//Open file
 	GLuint shaderID = 0;
 	std::string shaderString;
-	std::ifstream sourceFile( path.c_str() );
+	std::ifstream sourceFile(path.c_str());
 
 	//Source file loaded
 	if(sourceFile)
@@ -218,9 +185,13 @@ GLuint ShaderProgram::loadShaderFromFile(std::string path, GLenum shaderType)
 		//Create shader ID
 		shaderID = glCreateShader(shaderType);
 
-        //Set shader source
-        const GLchar* shaderSource = shaderString.c_str();
-        glShaderSource( shaderID, 1, (const GLchar**)&shaderSource, NULL );
+		//Set shader source
+        const GLchar* shaderSourceChar[1];
+        GLint shaderSourceLength[1];
+        shaderSourceChar[0] = shaderString.c_str();
+        shaderSourceLength[0] = shaderString.length();
+
+        glShaderSource(shaderID, 1, shaderSourceChar, shaderSourceLength);
 
         //Compile shader source
         glCompileShader(shaderID);
@@ -228,9 +199,10 @@ GLuint ShaderProgram::loadShaderFromFile(std::string path, GLenum shaderType)
         //Check shader for errors
         GLint shaderCompiled = GL_FALSE;
         glGetShaderiv(shaderID, GL_COMPILE_STATUS, &shaderCompiled);
-        if( shaderCompiled != GL_TRUE )
+        if(shaderCompiled != GL_TRUE)
         {
-            printf("Unable to compile shader %d!\n\nSource:\n%s\n", shaderID, shaderSource);
+            std::cerr << "Unable to compile shader " << shaderID << std::endl;
+            std::cerr << "\n\nSource:\n\n" << shaderSourceChar[0] << std::endl;
             printShaderLog(shaderID);
             glDeleteShader(shaderID);
             shaderID = 0;
@@ -238,7 +210,7 @@ GLuint ShaderProgram::loadShaderFromFile(std::string path, GLenum shaderType)
 	}
     else
     {
-        printf("Unable to open file %s\n", path.c_str());
+        std::cerr << "Unable to open file " << path.c_str() << std::endl;
     }
 
 	return shaderID;

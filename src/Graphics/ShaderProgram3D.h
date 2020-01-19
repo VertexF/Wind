@@ -70,12 +70,12 @@ class ShaderProgram3D : public ShaderProgram
                 mesh.at(i)->draw();
             }
         }
-
+		
 		template<typename T>
 		void drawModel(T mesh)
-		{
+        {
 			//Each model needs it's own matrix model for translation that's why we recreate the GLfloat[] every loop
-			GLfloat tempModel[16] = { 0 };
+			GLfloat tempModel[16] = {0};
 			//Note: That this rotation is using RigidBody motion rather than any all transform matrix.
 			mesh->getBody()->getGLTransform(tempModel);
 
@@ -83,10 +83,9 @@ class ShaderProgram3D : public ShaderProgram
 			glUniformMatrix4fv(modelLocation, 1, GL_FALSE, tempModel);
 
 			mesh->draw();
-		}
+        }
 
-
-	private:
+	public:
 		//Attribute locations
 		GLint vertexPos3DLocation;
 		GLint indicesPos3DLocation;
@@ -105,14 +104,11 @@ class ShaderProgram3D : public ShaderProgram
 
 		//Projection matrix
 		wind::Matrix4x4 projectionMatrix;
-		GLint projectionMatrixLocation;
 		GLfloat finalProjection[16];
 
 		//Modelview matrix
 		wind::Matrix4x4 modelViewMatrix;
-		GLint modelViewMatrixLocation;
-		GLfloat finalModel[16];
-		GLfloat mfinal[16];
+
 };
 
 #endif

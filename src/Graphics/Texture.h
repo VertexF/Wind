@@ -2,6 +2,7 @@
 #define TEXTURE_H
 
 #include <string>
+#include <vector>
 #include <iostream>
 #include <assert.h>
 #include <GL/glew.h>
@@ -25,8 +26,6 @@ class Texture
 
 		//This also returns a copy of the textureID.
 		//Note: If it is failing pass it as a pointer rather than just stack.
-		void buildTexture(const std::string& filepath);
-		bool loadTexture(const std::string& filepath);
 		virtual void bind(unsigned int unit);
 		void unbind(unsigned int unit);
 
@@ -37,6 +36,8 @@ class Texture
 		bool loadTextureFromFileWithColorKey32(std::string filePath, GLubyte r, GLubyte g, GLubyte b, GLubyte a = 000);
 		bool loadTextureFromPixels32();
 		bool loadTextureFromPixels32(GLuint* pixels, GLuint imgWidth, GLuint imgHeight, GLuint texWidth, GLuint texHeight);
+
+		bool loadTextureCube(std::vector<std::string> filePaths);
 
 		void createPixels32(GLuint imgWidth, GLuint imgHeight);
 		void copyPixels32(GLuint* pixels, GLuint imgWidth, GLuint imgHeight);

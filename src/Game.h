@@ -77,8 +77,8 @@ class Game : public RigidBodyApplication
 		//Shader shad;
 
 		/*For rendering text**/
-		textProgram fontProgram2D;
-		textProgram fontTimer2D;
+		ShaderProgram2D fontProgram2D;
+		ShaderProgram2D fontTimer2D;
 		Font font;
 		ColourRGBA textColour;
 		ColourRGBA levelColour;

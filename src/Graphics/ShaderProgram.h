@@ -5,13 +5,9 @@
 #include <fstream>
 #include <GL/glew.h>
 #include <GL/glu.h>
+#include <iostream>
 
 #include "../Physics/include/Core.h"
-
-namespace
-{
-	const static unsigned int TOTAL_SHADERS = 2;
-}
 
 class ShaderProgram
 {
@@ -27,7 +23,16 @@ class ShaderProgram
 
 		GLuint getProgramID();
 
+    protected:
+		enum
+		{
+		    VERTEX_SHADER,
+		    FRAGMENT_SHADER,
+
+            TOTAL_SHADERS
+		};
 	protected:
+
 		std::string LoadShader(const std::string& fileName);
 
 		void printProgramLog(GLuint program);
