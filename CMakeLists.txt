@@ -33,4 +33,4 @@ add_subdirectory(src/Components)
 
 add_executable(Wind src/main.cpp)
 
-target_link_libraries(Wind PRIVATE OpenGL::GL SDL2::Core SDL2::Main GLEW::GLEW ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} Application_Lib Core_Lib Collision_Lib Graphics_Lib Component_Lib)
+target_link_libraries(Wind PRIVATE OpenGL::GL OpenGL::GLU SDL2::Core SDL2::Main GLEW::GLEW ${IL_LIBRARIES} ${ILU_LIBRARIES} ${ILUT_LIBRARIES} Application_Lib Core_Lib Collision_Lib Graphics_Lib Component_Lib)
