@@ -57,6 +57,9 @@ Game::Game() : RigidBodyApplication("Cube Game", 800, 600),
     gameOver = false;
     blockCount = 0;
     glEnable(GL_TEXTURE_2D);
+
+    _seconds = 30.0;
+    _timeLeft = 30;
 }
 
 Game::~Game()
@@ -172,6 +175,7 @@ void Game::resetGame()
     textColour.g = 0.5f;
     textColour.b = 1.0f;
     textColour.a = 0.5f;
+    _timeLeft = 30;
 
     gameOver = false;
 
@@ -179,12 +183,11 @@ void Game::resetGame()
 
 void Game::gameLogic()
 {
-    if (timeLeft > 0)
+    if (_timeLeft > 0)
     {
-        int tim = 0;
-        timeLeft -= countDown.getCurrentTicks() / 100;
-        tim = timeLeft / 10;
-        time = std::to_string(tim);
+        _timeLeft = static_cast<int>(_seconds - (countDown.getTicks() / 1000));
+        TimerString.str("");
+        TimerString << "Time : " << _timeLeft;
 
         if (blockCount > 0)
         {
@@ -193,10 +196,9 @@ void Game::gameLogic()
     }
     else
     {
+        TimerString.str("");
         countDown.stop();
-        time = "";
 
-        textPosition = 0;
         textPosition = FONT_TEXT_ALIGN_CENTERED_H | FONT_TEXT_ALIGN_CENTERED_V;
         textColour.r = 0.4f;
         textColour.g = 0.6f;
@@ -472,9 +474,8 @@ void Game::Display()
 
     fontProgram2D.bind();
     fontProgram2D.enableBlend();
-    fontProgram2D.setModelView(wind::Matrix4x4());
-    fontProgram2D.updateModelView();
     fontProgram2D.setTextColor(textColour);
+
     font.renderText(&fontProgram2D, 0, 0, tester, &screenRect, textPosition);
     fontProgram2D.unbind();
 
@@ -482,7 +483,7 @@ void Game::Display()
     fontTimer2D.setModelView(wind::Matrix4x4());
     fontTimer2D.updateModelView();
     fontTimer2D.setTextColor(textColour);
-    font.renderText(&fontTimer2D, 0, 0, time, &screenRect, FONT_TEXT_ALIGN_RIGHT);
+    font.renderText(&fontTimer2D, 0, 0, TimerString.str(), &screenRect, FONT_TEXT_ALIGN_RIGHT);
     fontTimer2D.unbind();
 
     SDL_GL_SwapWindow(_window);

@@ -76,7 +76,6 @@ private:
     Random rand;
     Timer PhysicsClock;
     Timer countDown;
-    //Shader shad;
 
     /*For rendering text**/
     ShaderProgram2D fontProgram2D;
@@ -89,7 +88,8 @@ private:
     std::string tester;
     std::string time;
     wind::real mousevel;
-
+    real _seconds;
+    int _timeLeft;
     int MidX;
     int MidY;
 
