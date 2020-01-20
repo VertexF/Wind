@@ -1,116 +1,123 @@
 #include "Timer.h"
 
-Timer::Timer()
+#include <SDL.h>
+
+namespace wind
 {
-    start = false;
-    paused = false;
 
-    StartTicks = 0;
-    PausedTicks = 0;
-
-    CurrentFrame = 0;
-    mLastFrameDuration = 0;
-    mAverageFrameDuration = 0;
+/******************************************************************************/
+Timer::Timer() : _start(false), _paused(false), _startTicks(0), _pausedTicks(0),
+_currentFrame(0), _lastFrameDuration(0), _averageFrameDuration(0), _FPS(0)
+{
 }
 
-void Timer::Start()
+/******************************************************************************/
+void Timer::start()
 {
-    start = true;
-    paused = false;
-	FPS = 0;
+    _start = true;
+    _paused = false;
+    _FPS = 0;
 
-    StartTicks = SDL_GetTicks();
-    PausedTicks = 0;
+    _startTicks = SDL_GetTicks();
+    _pausedTicks = 0;
 }
 
-void Timer::Stop()
+/******************************************************************************/
+void Timer::stop()
 {
-    start = false;
-    paused = false;
+    _start = false;
+    _paused = false;
 
-    StartTicks = 0;
-    PausedTicks = 0;
+    _startTicks = 0;
+    _pausedTicks = 0;
 }
 
-void Timer::Pause()
+/******************************************************************************/
+void Timer::pause()
 {
-    if(start && !paused)
+    if (_start && !_paused)
     {
-        paused = true;
+        _paused = true;
 
-        PausedTicks = SDL_GetTicks() - StartTicks;
-        StartTicks = 0;
+        _pausedTicks = SDL_GetTicks() - _startTicks;
+        _startTicks = 0;
     }
 }
 
-void Timer::Unpause()
+/******************************************************************************/
+void Timer::unpause()
 {
-    if(start && paused)
+    if (_start && _paused)
     {
-        paused = false;
+        _paused = false;
 
-        StartTicks = SDL_GetTicks() - PausedTicks;
-        PausedTicks = 0;
+        _startTicks = SDL_GetTicks() - _pausedTicks;
+        _pausedTicks = 0;
     }
 }
 
-Uint32 Timer::GetTicks()
+/******************************************************************************/
+long long Timer::getTicks()
 {
-    Uint32 Time = 0;
+    long long Time = 0;
 
-    if(start)
+    if (_start)
     {
-        if(paused)
+        if (_paused)
         {
-            Time = PausedTicks;
+            Time = _pausedTicks;
         }
         else
         {
-            Time = SDL_GetTicks() - StartTicks;
+            Time = SDL_GetTicks() - _startTicks;
         }
     }
 
     return Time;
 }
 
-void Timer::Update()
+/******************************************************************************/
+void Timer::update()
 {
-    if(!is_paused())
+    if (!isPaused())
     {
-        CurrentFrame++;
+        _currentFrame++;
     }
 
-    unsigned int GlobalTime = SDL_GetTicks();
-    mLastFrameDuration = GlobalTime - StartTicks;
-    StartTicks = GlobalTime;
+    _lastFrameDuration = getTicks();
+    _startTicks = SDL_GetTicks();
 
-    if(CurrentFrame > 1)
+    if (_currentFrame > 1)
     {
-        if(mAverageFrameDuration <= 0)
+        if (_averageFrameDuration <= 0)
         {
-            mAverageFrameDuration = mLastFrameDuration;
+            _averageFrameDuration = _lastFrameDuration;
         }
         else
         {
-            mAverageFrameDuration *= 0.99;
-            mAverageFrameDuration += 0.01 * StartTicks;
+            _averageFrameDuration *= 0.99;
+            _averageFrameDuration += 0.01 * _startTicks;
 
-            FPS = 1000.0 / mAverageFrameDuration;
+            _FPS = 1000.0 / _averageFrameDuration;
         }
     }
 }
 
-Uint32 Timer::GetCurrentTicks()
+/******************************************************************************/
+long long Timer::getCurrentTicks()
 {
-    return StartTicks;
+    return _startTicks;
 }
 
-bool Timer::is_started()
+/******************************************************************************/
+bool Timer::isStarted()
 {
-    return start;
+    return _start;
 }
 
-bool Timer::is_paused()
+/******************************************************************************/
+bool Timer::isPaused()
 {
-    return paused;
+    return _paused;
 }
+}; //wind

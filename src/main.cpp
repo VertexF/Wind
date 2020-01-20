@@ -4,7 +4,7 @@
 */
 int main(int argv, char** argc)
 {
-    Game game;
+    wind::Game game;
     game.mainLoop();
 
     return 0;

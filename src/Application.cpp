@@ -1,7 +1,9 @@
 #include "Application.h"
 
+namespace wind
+{
 /******************************************************************************/
-Application::Application(const std::string& title, int w, int h) : _test(gluNewQuadric()), 
+Application::Application(const std::string& title, int w, int h) : _test(gluNewQuadric()),
     _width(w), _height(h),
     _ratio(static_cast<float>(_width) / static_cast<float>(_height)),
     _title(title)
@@ -29,7 +31,7 @@ void Application::setup()
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
-    if(SDL_Init(SDL_INIT_EVERYTHING) < 0)
+    if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
     {
         std::cerr << "SDL failed to start" << std::endl;
     }
@@ -46,9 +48,9 @@ void Application::setup()
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-        _window = SDL_CreateWindow(_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-                                   _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-        if(_window == nullptr)
+        _window = SDL_CreateWindow(_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+            _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+        if (_window == nullptr)
         {
             std::cerr << "Window could not be started for some reason" << std::endl;
         }
@@ -56,14 +58,14 @@ void Application::setup()
         {
             //This is how we start up the render.
             _context = SDL_GL_CreateContext(_window);
-            if(_context == nullptr)
+            if (_context == nullptr)
             {
                 std::cerr << "Context could not be started for some reason" << std::endl;
             }
             else
             {
                 //This is the vsync to stop the ripped animations.
-                if(SDL_GL_SetSwapInterval(1) < 0)
+                if (SDL_GL_SetSwapInterval(1) < 0)
                 {
                     std::cerr << "Warning: Unable to set VSync!" << std::endl;
                 }
@@ -71,15 +73,15 @@ void Application::setup()
                 //Here we are starting up glew.
                 glewExperimental = GL_TRUE;
                 GLenum error = glewInit();
-                if(GLEW_OK != error)
+                if (GLEW_OK != error)
                 {
                     std::cerr << stderr << "You are have glew error :(" << std::endl;
                 }
 
                 //Make sure OpenGL 3.3 is supported
-                if(!GLEW_VERSION_3_2)
+                if (!GLEW_VERSION_3_2)
                 {
-                    printf( "OpenGL 3.2 not supported!\n" );
+                    printf("OpenGL 3.2 not supported!\n");
                 }
 
                 ilInit();
@@ -88,7 +90,7 @@ void Application::setup()
 
                 //Check for error
                 ILenum ilError = ilGetError();
-                if(ilError != IL_NO_ERROR)
+                if (ilError != IL_NO_ERROR)
                 {
                     std::cerr << "Error initializing DevIL! " << iluErrorString(ilError) << std::endl;
                 }
@@ -132,38 +134,38 @@ void Application::controllerSetup()
     //{
         //std::cerr << "Failed" << std::endl;
     //}
-    if(SDL_NumJoysticks() < 1)
+    if (SDL_NumJoysticks() < 1)
     {
         std::cerr << "No controller connected " << SDL_GetError() << std::endl;
     }
     else
     {
         std::cerr << "A controller is connected: Num of joy sticks is ";
-        for(int i = 0; i < SDL_NumJoysticks(); i++)
+        for (int i = 0; i < SDL_NumJoysticks(); i++)
         {
             std::cerr << i << std::endl;
         }
 
         SDL_JoystickEventState(SDL_ENABLE);
         _gameController = SDL_JoystickOpen(0);
-        if(_gameController == NULL)
+        if (_gameController == NULL)
         {
             std::cerr << "Could not open controller " << SDL_GetError() << std::endl;
         }
         else
         {
             _controllerHaptic = SDL_HapticOpenFromJoystick(_gameController);
-            if(_controllerHaptic == NULL)
+            if (_controllerHaptic == NULL)
             {
-                std::cerr <<  "Warning: Controller does not support haptics! SDL Error: " 
+                std::cerr << "Warning: Controller does not support haptics! SDL Error: "
                     << SDL_GetError() << std::endl;
             }
             else
             {
                 //Get initialize rumble
-                if(SDL_HapticRumbleInit(_controllerHaptic) < 0 )
+                if (SDL_HapticRumbleInit(_controllerHaptic) < 0)
                 {
-                    std::cerr <<  "Warning: Unable to initialize rumble! SDL Error: " 
+                    std::cerr << "Warning: Unable to initialize rumble! SDL Error: "
                         << SDL_GetError() << std::endl;
                 }
             }
@@ -195,10 +197,10 @@ void Application::display()
 
     glColor3f(0.1f, 0.9f, 0.7f);
     glBegin(GL_QUADS);
-        glVertex3f(-5.f, -5.f, -15.f);
-        glVertex3f(5.f, -5.f, -15.f);
-        glVertex3f(5.f, 5.f, -15.f);
-        glVertex3f(-5.f, 5.f, -15.f);
+    glVertex3f(-5.f, -5.f, -15.f);
+    glVertex3f(5.f, -5.f, -15.f);
+    glVertex3f(5.f, 5.f, -15.f);
+    glVertex3f(-5.f, 5.f, -15.f);
     glEnd();
 }
 
@@ -210,7 +212,7 @@ void Application::update()
 /******************************************************************************/
 void Application::resize(int width, int height)
 {
-    if(height <= 0)
+    if (height <= 0)
     {
         height = 1;
     }
@@ -226,7 +228,7 @@ MassAggregateApplication::MassAggregateApplication(unsigned int ParticleCount, c
     Application(Title, w, h), _world(ParticleCount * 10)
 {
     _particleArray = new wind::Particle[ParticleCount];
-    for(unsigned int i = 0; i < ParticleCount; i++)
+    for (unsigned int i = 0; i < ParticleCount; i++)
     {
         _world.getParticles().push_back(&_particleArray[i]);
     }
@@ -238,7 +240,7 @@ MassAggregateApplication::MassAggregateApplication(unsigned int ParticleCount, c
 /******************************************************************************/
 MassAggregateApplication::~MassAggregateApplication()
 {
-    delete [] _particleArray;
+    delete[] _particleArray;
 }
 
 /******************************************************************************/
@@ -256,11 +258,11 @@ void MassAggregateApplication::display()
     gluLookAt(0.0, 3.5, 9.0, 0.0, 3.5, 0.0, 0.0, 1.0, 0.0);
     glColor3f(0.0f, 0.0f, 0.0f);
 
-    wind::ParticleWorld::Particles &particles = _world.getParticles();
-    for(wind::ParticleWorld::Particles::iterator p = particles.begin(); p != particles.end(); p++)
+    wind::ParticleWorld::Particles& particles = _world.getParticles();
+    for (wind::ParticleWorld::Particles::iterator p = particles.begin(); p != particles.end(); p++)
     {
         wind::Particle* particle = *p;
-        const wind::Vector3 &pos = particle->GetPosition();
+        const wind::Vector3& pos = particle->GetPosition();
         glPushMatrix();
         glTranslated(pos.x, pos.y, pos.z);
         gluSphere(_test, 0.040, 20, 10);
@@ -277,14 +279,14 @@ void MassAggregateApplication::update(wind::real Duration)
 }
 
 /******************************************************************************/
-RigidBodyApplication::RigidBodyApplication(const std::string& title, int w, int h) : 
+RigidBodyApplication::RigidBodyApplication(const std::string& title, int w, int h) :
     Application(title, w, h), _resolver(8 * MAX_CONTACTS), _theta(0.f),
     _alpha(15.f), _xLastPos(0), _yLastPos(0), _pausePhysics(false),
     _autoPausePhysics(false), _renderDebugInfo(false)
 {
     _collData.contactArray = _contacts;
 
-    _physicsClock.Start();
+    _physicsClock.start();
 }
 
 /******************************************************************************/
@@ -293,7 +295,7 @@ void RigidBodyApplication::display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
-    gluLookAt(18.0f, 0, 0,  0, 0, 0,  0, 1.0f, 0);
+    gluLookAt(18.0f, 0, 0, 0, 0, 0, 0, 1.0f, 0);
     glRotatef(-_alpha, 0, 0, 1);
     glRotatef(_theta, 0, 1, 0);
     glTranslatef(0, -5.0f, 0);
@@ -302,14 +304,14 @@ void RigidBodyApplication::display()
 /******************************************************************************/
 void RigidBodyApplication::update()
 {
-    wind::real Duration = _physicsClock.GetTicks() * 0.001f;
+    wind::real Duration = _physicsClock.getTicks() * 0.001;
     if (Duration > 0.0)
     {
         //Here we simply stop the physics simulation if we are paused.
         if (_pausePhysics == false)
         {
             //Here is where all the meat happens we generate contacts and update them.
-            _physicsClock.Update();
+            _physicsClock.update();
 
             updateObjects(Duration);
 
@@ -323,10 +325,11 @@ void RigidBodyApplication::update()
             _pausePhysics = true;
             _autoPausePhysics = false;
         }
-        else 
+        else
         {
             //Do no physics option.
             Application::update();
         }
     }
 }
+};

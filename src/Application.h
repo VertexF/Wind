@@ -31,6 +31,8 @@ namespace
 
 }; //Anon
 
+namespace wind
+{
 class Application
 {
 public:
@@ -68,13 +70,13 @@ protected:
     //SDL_Surface *Loadimage(std::string filename);
 
     SDL_GLContext _context;
-    SDL_Window *_window;
+    SDL_Window* _window;
     SDL_Event _input;
-    GLUquadric *_test;
+    GLUquadric* _test;
 
     //These two variables start the set up for the controller.
-    SDL_Joystick *_gameController;
-    SDL_Haptic *_controllerHaptic;
+    SDL_Joystick* _gameController;
+    SDL_Haptic* _controllerHaptic;
 
     //title of the window.
     std::string _title;
@@ -108,7 +110,7 @@ public:
 
 protected:
     wind::ParticleWorld _world;
-    wind::Particle *_particleArray;
+    wind::Particle* _particleArray;
     wind::GroundContacts _groundContactGenerator;
 
 };
@@ -168,5 +170,5 @@ protected:
     //Holds the time for the physics
     Timer _physicsClock;
 };
-
+};
 #endif

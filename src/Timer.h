@@ -1,35 +1,37 @@
 #ifndef TIMER_H
 #define TIMER_H
-#include <SDL.h>
 
+namespace wind
+{
 class Timer
 {
-    public:
-        Timer();
-        void Start();
-        void Stop();
-        void Pause();
-        void Unpause();
+public:
+    Timer();
+    void start();
+    void stop();
+    void pause();
+    void unpause();
 
-        Uint32 GetTicks();
-        //This function get the global time, counts the frames it's one, works out the average duration of the frame and keeps track of the FPS
-        void Update();
+    long long getTicks();
+    //This function get the global time, counts the frames it's one, works out the average duration of the frame and keeps track of the FPS
+    void update();
 
-        bool is_started();
-        bool is_paused();
-        Uint32 GetCurrentTicks();
+    bool isStarted();
+    bool isPaused();
+    long long getCurrentTicks();
 
-        Uint32 mLastFrameDuration;
-        double mAverageFrameDuration;
-        double FPS;
-    private:
-        Uint32 StartTicks;
-        Uint32 PausedTicks;
+    long long _lastFrameDuration;
+    double _averageFrameDuration;
+    double _FPS;
+private:
+    long long _startTicks;
+    long long _pausedTicks;
 
-        Uint32 CurrentFrame;
+    long long _currentFrame;
 
-        bool start;
-        bool paused;
+    bool _start;
+    bool _paused;
 };
+}; //wind
 
 #endif // TIMER_H
