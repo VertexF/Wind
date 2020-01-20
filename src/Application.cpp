@@ -1,31 +1,31 @@
 #include "Application.h"
 
-Application::Application(const std::string& Title)
+/******************************************************************************/
+Application::Application(const std::string& title) : _test(gluNewQuadric()), 
+    _width(800), _height(600), 
+    _ratio(static_cast<float>(_width) / static_cast<float>(_height)),
+    _title(title)
 {
-    Test = gluNewQuadric();
-    mWidth = 800;
-    mHeight = 600;
-
-    mRatio = float(mWidth) / float(mHeight);
-
-	Setup(Title);
+	setup();
 }
 
+/******************************************************************************/
 Application::~Application()
 {
-
 }
 
-std::string Application::GetTitle()
+/******************************************************************************/
+std::string Application::getTitle()
 {
-    return "OpenGL + GLU Application";
+    return _title;
 }
 
-void Application::Setup(const std::string& Title)
+/******************************************************************************/
+void Application::setup()
 {
     //This sets up what openGL version we are going to use, in this case it's 3.3 that why it say that.
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
@@ -46,16 +46,17 @@ void Application::Setup(const std::string& Title)
         SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
         SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-		mWindow = SDL_CreateWindow(Title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, mWidth, mHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-        if(mWindow == NULL)
+		_window = SDL_CreateWindow(_title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+                                   _width, _height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+        if(_window == nullptr)
         {
             std::cerr << "Window could not be started for some reason" << std::endl;
         }
         else
         {
             //This is how we start up the render.
-            Context = SDL_GL_CreateContext(mWindow);
-            if(Context == NULL)
+            _context = SDL_GL_CreateContext(_window);
+            if(_context == nullptr)
             {
                 std::cerr << "Context could not be started for some reason" << std::endl;
             }
@@ -76,16 +77,10 @@ void Application::Setup(const std::string& Title)
 				}
 
                 //Make sure OpenGL 3.3 is supported
-                if(!GLEW_VERSION_3_3)
+                if(!GLEW_VERSION_3_2)
                 {
-                    printf( "OpenGL 3.3 not supported!\n" );
+                    printf( "OpenGL 3.2 not supported!\n" );
                 }
-
-				//Initialize SDL_ttf
-				//if(TTF_Init() == -1)
-				//{
-					//std::cerr << "TTF couldn't start" << std::endl;
-				//}
 
 				ilInit();
 				iluInit();
@@ -99,29 +94,27 @@ void Application::Setup(const std::string& Title)
 				}
 
 				//glEnable(GL_TEXTURE_2D);
-                InitGraphics();
+                initGraphics();
 
 				controllerSetup();
 
+                //Might be a better way than this in a different API
 				//SDL_Surface *icon = Loadimage("res/icon.png");
-    //            SDL_SetWindowIcon(mWindow, icon);
+                //SDL_SetWindowIcon(_window, icon);
             }
-
-
         }
     }
-
 }
 
-void Application::InitGraphics()
+/******************************************************************************/
+void Application::initGraphics()
 {
-
 	glClearColor(0.9f, 0.95f, 1.0f, 1.0f);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
-	//glEnable(GL_DEPTH_TEST);
-	//glShadeModel(GL_SMOOTH);
-	glViewport(0.f, 0.f, mWidth, mHeight);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glEnable(GL_DEPTH_TEST);
+	glShadeModel(GL_SMOOTH);
+	glViewport(0.f, 0.f, static_cast<GLsizei>(_width), static_cast<GLsizei>(_height));
 
 	/**
 	glEnable(GL_TEXTURE_2D);
@@ -132,6 +125,7 @@ void Application::InitGraphics()
     //SetView();
 }
 
+/******************************************************************************/
 void Application::controllerSetup()
 {
 	//Set texture filtering to linear
@@ -152,61 +146,52 @@ void Application::controllerSetup()
 		}
 
 		SDL_JoystickEventState(SDL_ENABLE);
-        gameController = SDL_JoystickOpen(0);
-        if(gameController == NULL)
+        _gameController = SDL_JoystickOpen(0);
+        if(_gameController == NULL)
         {
             std::cerr << "Could not open controller " << SDL_GetError() << std::endl;
         }
 		else
 		{
-			controllerHaptic = SDL_HapticOpenFromJoystick(gameController);
-			if(controllerHaptic == NULL)
+			_controllerHaptic = SDL_HapticOpenFromJoystick(_gameController);
+			if(_controllerHaptic == NULL)
 			{
-				std::cerr <<  "Warning: Controller does not support haptics! SDL Error: " << SDL_GetError() << std::endl;
+				std::cerr <<  "Warning: Controller does not support haptics! SDL Error: " 
+                    << SDL_GetError() << std::endl;
 			}
 			else
 			{
 				//Get initialize rumble
-				if(SDL_HapticRumbleInit(controllerHaptic) < 0 )
+				if(SDL_HapticRumbleInit(_controllerHaptic) < 0 )
 				{
-					std::cerr <<  "Warning: Unable to initialize rumble! SDL Error: " << SDL_GetError() << std::endl;
+					std::cerr <<  "Warning: Unable to initialize rumble! SDL Error: " 
+                        << SDL_GetError() << std::endl;
 				}
 			}
 		}
     }
 }
 
-//SDL_Surface *Application::Loadimage(std::string filename)
-//{
-//    //SDL_Surface *Temp = NULL;
-//
-//    //Temp = IMG_Load(filename.c_str());
-//    //if(Temp != NULL)
-//    //{
-//    //    return Temp;
-//    //}
-//    //else
-//    //{
-//    //    std::cerr << "Image could not correctly loaded" << std::endl;
-//    //    return nullptr;
-//    //}
-//}
-
+/******************************************************************************/
 //LegacyGL setup of perspective.
-void Application::SetView()
+void Application::setView()
 {
+    //Currrently used for testing OpenGL. 
+    //This does not set the view in the engine.
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 	glPushMatrix();
-    gluPerspective(60.0, mRatio, 0.2, 500.0);
-    glViewport(0, 0, mWidth, mHeight);
+    gluPerspective(60.0, _ratio, 0.2, 500.0);
+    glViewport(0, 0, _width, _height);
     glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glPushMatrix();
 }
 
-void Application::Display()
+/******************************************************************************/
+void Application::display()
 {
+    //This is a test to see if OpenGL is working at all.
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glColor3f(0.1f, 0.9f, 0.7f);
@@ -218,25 +203,28 @@ void Application::Display()
     glEnd();
 }
 
-void Application::Update()
+/******************************************************************************/
+void Application::update()
 {
-
 }
 
-void Application::Resize(int width, int height)
+/******************************************************************************/
+void Application::resize(int width, int height)
 {
     if(height <= 0)
     {
         height = 1;
     }
 
-    mWidth = width;
-    mHeight = height;
-    glViewport(0, 0, mWidth, mHeight);
-    SetView();
+    _width = width;
+    _height = height;
+    glViewport(0, 0, _width, _height);
+    setView();
 }
 
-MassAggregateApplication::MassAggregateApplication(unsigned int ParticleCount, const std::string& Title) : Application(Title), mWorld(ParticleCount * 10)
+/******************************************************************************/
+MassAggregateApplication::MassAggregateApplication(unsigned int ParticleCount, const std::string& Title) : 
+    Application(Title), mWorld(ParticleCount * 10)
 {
     mParticleArray = new wind::Particle[ParticleCount];
     for(unsigned int i = 0; i < ParticleCount; i++)
@@ -248,18 +236,20 @@ MassAggregateApplication::MassAggregateApplication(unsigned int ParticleCount, c
     mWorld.getContacts().push_back(&mGroundContactGenerator);
 }
 
+/******************************************************************************/
 MassAggregateApplication::~MassAggregateApplication()
 {
     delete [] mParticleArray;
 }
 
+/******************************************************************************/
 void MassAggregateApplication::InitGraphics()
 {
     //Here we just make sure we inherent the applications init graphics function which we still need.
-    Application::InitGraphics();
+    Application::initGraphics();
 }
 
-
+/******************************************************************************/
 void MassAggregateApplication::Display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -274,11 +264,12 @@ void MassAggregateApplication::Display()
         const wind::Vector3 &pos = particle->GetPosition();
         glPushMatrix();
         glTranslated(pos.x, pos.y, pos.z);
-        gluSphere(Test, 0.040, 20, 10);
+        gluSphere(_test, 0.040, 20, 10);
         glPopMatrix();
     }
 }
 
+/******************************************************************************/
 void MassAggregateApplication::Update(wind::real Duration)
 {
     mWorld.startFrame();
@@ -286,6 +277,7 @@ void MassAggregateApplication::Update(wind::real Duration)
     mWorld.runPhysics(Duration);
 }
 
+/******************************************************************************/
 RigidBodyApplication::RigidBodyApplication(const std::string& title) : Application(title),
 	resolver(8 * maxContacts),
 	theta(0.f),
@@ -302,6 +294,7 @@ RigidBodyApplication::RigidBodyApplication(const std::string& title) : Applicati
 	mPhysicsClock.Start();
 }
 
+/******************************************************************************/
 void RigidBodyApplication::display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -312,6 +305,7 @@ void RigidBodyApplication::display()
     glTranslatef(0, -5.0f, 0);
 }
 
+/******************************************************************************/
 void RigidBodyApplication::update()
 {
 	wind::real Duration = mPhysicsClock.GetTicks() * 0.001f;
@@ -323,7 +317,7 @@ void RigidBodyApplication::update()
 	//Here we simply stop the physics simulation if we are paused.
 	if(pausePhysics)
 	{
-		Application::Update();
+		Application::update();
 		return;
 	}
 	else if(autoPausePhysics)

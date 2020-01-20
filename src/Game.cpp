@@ -10,7 +10,7 @@ Game::Game() : RigidBodyApplication("Cube Game"),
 	cameraRot(0.0, 0.0, 0.0, 0.0),
 	running(true),
 	runOnce(false),
-	player1(std::make_shared<Player>(mRatio))
+	player1(std::make_shared<Player>(_ratio))
 {
 	textColour.r = 1.0f;
 	textColour.g = 0.5f;
@@ -19,8 +19,8 @@ Game::Game() : RigidBodyApplication("Cube Game"),
 
 	screenRect.x = 0.0f;
 	screenRect.y = 0.0f;
-	screenRect.w = static_cast<GLfloat>(mWidth);
-	screenRect.h = static_cast<GLfloat>(mHeight);
+	screenRect.w = static_cast<GLfloat>(_width);
+	screenRect.h = static_cast<GLfloat>(_height);
 
 	levelColour = {0.7, 0.7, 0.7, 1.0};
 
@@ -44,8 +44,8 @@ Game::Game() : RigidBodyApplication("Cube Game"),
 	loadMeshes();
 
 	timeLeft = 100000;
-	MidX = mWidth / 2;
-	MidY = mHeight / 2;
+	MidX = _width / 2;
+	MidY = _height / 2;
 	mousevel = 0.1;
 	SDL_ShowCursor(SDL_DISABLE);
 
@@ -75,7 +75,7 @@ void Game::loadPrograms()
 	fontProgram2D.bind();
 
 	//Initialize projection
-	fontProgram2D.setProjection(Matrix4x4().orthoRH(0.0, mWidth, mHeight, 0.0, 1.0, -1.0));
+	fontProgram2D.setProjection(Matrix4x4().orthoRH(0.0, _width, _height, 0.0, 1.0, -1.0));
 	fontProgram2D.updateProjection();
 
 	//Initialize modelview
@@ -93,7 +93,7 @@ void Game::loadPrograms()
 	fontTimer2D.bind();
 
 	//Initialize projection
-	fontTimer2D.setProjection(Matrix4x4().orthoRH(0.0, mWidth, mHeight, 0.0, 1.0, -1.0));
+	fontTimer2D.setProjection(Matrix4x4().orthoRH(0.0, _width, _height, 0.0, 1.0, -1.0));
 	fontTimer2D.updateProjection();
 
 	//Initialize modelview
@@ -282,9 +282,9 @@ void Game::handleEvents()
 {
     wind::real x = 0.0;
     wind::real y = 0.0;
-	while(SDL_PollEvent(&Input))
+	while(SDL_PollEvent(&_input))
 	{
-		switch(Input.type)
+		switch(_input.type)
 		{
 			case SDL_QUIT:
 			running = false;
@@ -296,7 +296,7 @@ void Game::handleEvents()
                 countDown.Start();
                 timerFlag = true;
             }
-			switch(Input.key.keysym.scancode)
+			switch(_input.key.keysym.scancode)
 			{
 				case SDL_SCANCODE_ESCAPE:
 				running = false;
@@ -334,7 +334,7 @@ void Game::handleEvents()
 			break;
 
 			case SDL_KEYUP:
-			switch(Input.key.keysym.scancode)
+			switch(_input.key.keysym.scancode)
 			{
 			    case SDL_SCANCODE_ESCAPE:
 				break;
@@ -365,15 +365,15 @@ void Game::handleEvents()
 			break;
 
 			case SDL_JOYAXISMOTION:
-			if(Input.jaxis.which == 0)
+			if(_input.jaxis.which == 0)
 			{
-				 if(Input.jaxis.axis == 0)
+				 if(_input.jaxis.axis == 0)
 				 {
-					 if(Input.jaxis.value < -JOYSTICK_DEAD_ZONE)
+					 if(_input.jaxis.value < -JOYSTICK_DEAD_ZONE)
 					 {
 					 }
 					 //Above of dead zone
-					 else if(Input.jaxis.value > JOYSTICK_DEAD_ZONE)
+					 else if(_input.jaxis.value > JOYSTICK_DEAD_ZONE)
 					 {
 					 }
 					 else
@@ -381,13 +381,13 @@ void Game::handleEvents()
 					 }
 				 }
 
-				if(Input.jaxis.axis == 1)
+				if(_input.jaxis.axis == 1)
 				{
-					if(Input.jaxis.value < -JOYSTICK_DEAD_ZONE)
+					if(_input.jaxis.value < -JOYSTICK_DEAD_ZONE)
 					{
 					}
 					 //Above of dead zone
-					else if(Input.jaxis.value > JOYSTICK_DEAD_ZONE)
+					else if(_input.jaxis.value > JOYSTICK_DEAD_ZONE)
 					{
 					}
 					else
@@ -399,7 +399,7 @@ void Game::handleEvents()
 			break;
 		};
 
-		if(Input.type == SDL_MOUSEMOTION)
+		if(_input.type == SDL_MOUSEMOTION)
 		{
 			wind::real camYaw = 0.0;
 			wind::real camPitch = 0.0;
@@ -426,7 +426,7 @@ void Game::handleEvents()
 			cameraRot.normalise();
 			player1->rotate(cameraRot);
 
-			SDL_WarpMouseInWindow(mWindow, MidX, MidY);
+			SDL_WarpMouseInWindow(_window, MidX, MidY);
 		}
 	}
 }
@@ -496,8 +496,7 @@ void Game::Display()
     font.renderText(&fontTimer2D, 0, 0, time, &screenRect, FONT_TEXT_ALIGN_RIGHT);
     fontTimer2D.unbind();
 
-
-	SDL_GL_SwapWindow(mWindow);
+	SDL_GL_SwapWindow(_window);
 }
 
 void Game::mainLoop()

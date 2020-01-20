@@ -12,8 +12,8 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include "SDL.h"
-#include "SDL_opengl.h"
+#include <SDL.h>
+#include <SDL_opengl.h>
 #include <IL/il.h>
 #include <IL/ilu.h>
 
@@ -27,32 +27,32 @@
 class Application
 {
     public:
-        Application(const std::string& Title);
+        Application(const std::string& title);
         ~Application();
 
         //Simple returns an array of chars that handle the title.
-        virtual std::string GetTitle();
+        virtual std::string getTitle();
 
-        virtual void Setup(const std::string& Title = "");
+        virtual void setup();
 
         //This function draws stuff to the screen every frame.
         //Also by default this function draw a straight line across the screen so you can see OpenGL is working.
-        virtual void Display();
+        virtual void display();
 
         //This function flushes the screen every frame and updates it.
-        virtual void Update();
+        virtual void update();
 
         //This function resizes the screen and updates the gl viewpoint.
-        virtual void Resize(int width, int height);
+        virtual void resize(int width, int height);
 
 	protected:
 		//Sets up all the graphics ready to be rendered to the screen.
         //Needs to be called as soon as OpenGL has been started.
-        virtual void InitGraphics();
+        virtual void initGraphics();
 
         //This function sets up the projection characteristics.
         //By default the camera has 60 degree view with 2 to 500 units of range.
-        virtual void SetView();
+        virtual void setView();
 
 		//This function sets up the controller with SDL at the helm. Make sure you build this at the end of the setup.
 		void controllerSetup();
@@ -60,21 +60,22 @@ class Application
 		//This function just handles loading the image for the icon
 		//SDL_Surface *Loadimage(std::string filename);
 
-		SDL_GLContext Context;
-        SDL_Window* mWindow;
-        SDL_Event Input;
-		GLUquadric* Test;
+		SDL_GLContext _context;
+        SDL_Window* _window;
+        SDL_Event _input;
+		GLUquadric* _test;
 
 		//These two variables start the set up for the controller.
-		SDL_Joystick* gameController;
-		SDL_Haptic* controllerHaptic;
+		SDL_Joystick* _gameController;
+		SDL_Haptic* _controllerHaptic;
 
-		float mRatio;
+		//title of the window.
+		std::string _title;
+		float _ratio;
 
         //Height and width of the screen.
-        int mHeight;
-        int mWidth;
-
+        int _height;
+        int _width;
 };
 /**
     Just like the application this is the super class for any application that will use The Mass Aggregate Engine.

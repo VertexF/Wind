@@ -17,7 +17,7 @@ set(IL_LIBRARIES "${CMAKE_SOURCE_DIR}../../../DevIL Windows SDK/lib/x64/Release/
 set(ILU_LIBRARIES "${CMAKE_SOURCE_DIR}../../../DevIL Windows SDK/lib/x64/Release/ILU.lib")
 set(ILUT_LIBRARIES "${CMAKE_SOURCE_DIR}../../../DevIL Windows SDK/lib/x64/Release/ILUT.lib")
 
-find_package(SDL2 REQUIRED COMPONENTS main PATH SDL2_LIB)
+find_package(SDL2 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(DevIL REQUIRED)
 find_package(OpenGL REQUIRED)
