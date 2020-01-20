@@ -166,7 +166,6 @@ void Game::resetGame()
 
     player1->changePosition(wind::Vector3(0.0, 0.0, 0.0));
 
-    timeLeft = 100000;
     blockCount = 0;
     tester = "Find the blocks!";
     timerFlag = false;
@@ -483,7 +482,7 @@ void Game::Display()
     fontTimer2D.setModelView(wind::Matrix4x4());
     fontTimer2D.updateModelView();
     fontTimer2D.setTextColor(textColour);
-    font.renderText(&fontTimer2D, 0, 0, TimerString.str(), &screenRect, FONT_TEXT_ALIGN_RIGHT);
+    font.renderText(&fontTimer2D, 0, 0, TimerString.str(), &screenRect, FONT_TEXT_ALIGN_LEFT);
     fontTimer2D.unbind();
 
     SDL_GL_SwapWindow(_window);
