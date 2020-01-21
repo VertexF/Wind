@@ -1,13 +1,13 @@
 #include "Player.h"
 
 Player::Player(wind::real mRatio) :
-    cam(wind::Vector3(0.0, 0.0, 0.0), 70.0, static_cast<wind::real>(mRatio), 0.01, 1000.0)
+	cam(wind::Vector3(0.0, 0.0, 0.0), 70.0, static_cast<wind::real>(mRatio), 0.01, 1000.0)
 {
 	wind::Box::body = new wind::RigidBody();
 
 	cube = new Mesh();
 	once = true;
-	if(wind::Box::body == nullptr)
+	if (wind::Box::body == nullptr)
 	{
 		std::cerr << "Contact box primitive is null, check you assignment of new body" << std::endl;
 	}
@@ -30,8 +30,8 @@ void Player::setState(const wind::Vector3& pos, const wind::Vector3& half)
 	body->setInverseMass(mass);
 
 	wind::Matrix3 tensor;
-    tensor.setBlockInertiaTensor(halfSize, mass);
-    body->setInertiaTensor(tensor);
+	tensor.setBlockInertiaTensor(halfSize, mass);
+	body->setInertiaTensor(tensor);
 
 	body->setLinearDamping(0.95);
 	body->setAngularDamping(0.8);
@@ -73,7 +73,7 @@ void Player::move(wind::Vector3 vel)
 	cam.move(vel);
 }
 
-void Player::rotate(const wind::Quaternion &rot)
+void Player::rotate(const wind::Quaternion& rot)
 {
 	body->setRotation(wind::Vector3().rotate(rot));
 	cam.rotate(rot);
@@ -88,8 +88,8 @@ void Player::update(wind::real duration)
 
 void Player::changePosition(wind::Vector3 pos)
 {
-    body->setPosition(pos);
-    cam.resetPosition(pos);
+	body->setPosition(pos);
+	cam.resetPosition(pos);
 }
 
 void Player::draw()
@@ -107,7 +107,7 @@ Mesh* Player::getMesh()
 	return cube;
 }
 
-Camera Player::getCamera()
+wind::Camera Player::getCamera()
 {
-    return cam;
+	return cam;
 }

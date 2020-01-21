@@ -5,6 +5,7 @@
 #include "Components/Player.h"
 
 #include "Graphics/ShaderProgram3D.h"
+
 namespace wind
 {
 Game::Game() : RigidBodyApplication("Cube Game", 800, 600),

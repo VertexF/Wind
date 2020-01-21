@@ -22,9 +22,9 @@ class Block;
 namespace
 {
     //This holds the number of bodies for the vector of unique_ptrs.
-    const unsigned int static NUM_OF_CUBES = 1;
-    const unsigned int static NUM_OF_PLANES = 2;
-    const unsigned int static NUM_OF_COMPONENTS = 3;
+    const unsigned int NUM_OF_CUBES = 1;
+    const unsigned int NUM_OF_PLANES = 2;
+    const unsigned int NUM_OF_COMPONENTS = 3;
 
     const int JOYSTICK_DEAD_ZONE = 3200;
 };
