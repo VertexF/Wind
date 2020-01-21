@@ -704,7 +704,7 @@ namespace wind
 			}
 
 			/*These fucntions are the camera rotation*/
-			Vector3 getForward()
+			Vector3 getForward() const
 			{
 				//return Vector3(2.0 * (i * k - r * j), 2.0 * (j * k + r * i), 1.0 - 2.0 * (i * i + j * j));
 				return Vector3(0.0, 0.0, 1.0).rotate(*this);
@@ -716,7 +716,7 @@ namespace wind
 				return Vector3(0.0, 0.0, -1.0).rotate(*this);
 			}
 
-			Vector3 getUp()
+			Vector3 getUp() const
 			{
 				//return Vector3(2.0 * (i * j + r * k), 1.0 - 2.0 * (i * i + k * k), 2.0 * (j * k - r * i));
 				Vector3 result = Vector3(0.0, 1.0, 0.0).rotate(*this);
@@ -730,7 +730,7 @@ namespace wind
 				//return Vector3(0.0, -1.0, 0.0).rotate(*this);
 			}
 
-			Vector3 getRight()
+			Vector3 getRight() const
 			{
 				Vector3 result = Vector3(1.0 - 2.0 * (j * j + k * k), 2.0 * (i * j - r * k), 2.0 * (i * k + r * j));
 				//result.normalise();
@@ -1459,7 +1459,7 @@ namespace wind
 				GLarray[15] = static_cast<float>(data[3][3]);
 			}
 
-			Matrix4x4 perspectiveRH(real fovy, real aspect, real zNear, real zFar)
+			Matrix4x4 perspectiveRH(real fovy, real aspect, real zNear, real zFar) const
 			{
 				if(!(std::abs(aspect - std::numeric_limits<real>::epsilon()) > 0.0))
                 {
@@ -1511,7 +1511,7 @@ namespace wind
 				return Result;
 			}
 
-			Matrix4x4 lookAt(Vector3 eye, Vector3 centre, Vector3 up)
+			Matrix4x4 lookAt(Vector3 eye, Vector3 centre, Vector3 up) const
 			{
 				Vector3 f(centre - eye);
 				f.normalise();

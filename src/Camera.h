@@ -21,8 +21,8 @@ public:
 
     void resetPosition(const Vector3& pos);
 
-    Vector3 getForward() { return _forward; }
-    Vector3 getUp() { return _up; }
+    Vector3 getForward() const { return _forward; }
+    Vector3 getUp() const { return _up; }
 
     //These function returns a left and right vectors
     Vector3 getLeft();
@@ -34,18 +34,18 @@ public:
     void move(const Vector3 &vel);
 
     //This function takes the camera body aka camera space and returns a point in world space in a GLfloat matrix.
-    GLfloat* getCameraInWorldSpace();
+    GLfloat* getCameraInWorldSpace() const;
 
     void updateCamera(real duration);
 
-    RigidBody getBody() { return _body; }
+    RigidBody getBody() const { return _body; }
 
-    Matrix4x4 getCameraRotation();
-    Matrix4x4 getCameraTranslation();
+    Matrix4x4 getCameraRotation() const;
+    Matrix4x4 getCameraTranslation() const;
 
-    Matrix4x4 getLookAt();
-    Matrix4x4 getViewProjection();
-    Matrix4x4 getVP();
+    Matrix4x4 getLookAt() const;
+    Matrix4x4 getViewProjection() const;
+    Matrix4x4 getVP() const;
 
 private:
     Matrix4x4 _projection;

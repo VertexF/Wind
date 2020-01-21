@@ -74,7 +74,7 @@ void Camera::rotate(const Quaternion& rot)
 }
 
 /******************************************************************************/
-GLfloat* Camera::getCameraInWorldSpace()
+GLfloat* Camera::getCameraInWorldSpace() const
 {
 	_body.getTransform().fillGLArray(_cameraInWorld);
 	return _cameraInWorld;
@@ -90,14 +90,14 @@ void Camera::updateCamera(real duration)
 /**
 	These functions return the camera translation and rotation matrices.
 */
-Matrix4x4 Camera::getCameraRotation()
+Matrix4x4 Camera::getCameraRotation() const
 {
 	wind::Matrix4x4 cameraRotation;
 	return cameraRotation.initRotation(_rotation.getForward(), _rotation.getUp(), _rotation.getRight());
 }
 
 /******************************************************************************/
-Matrix4x4 Camera::getCameraTranslation()
+Matrix4x4 Camera::getCameraTranslation() const
 {
 	wind::Matrix4x4 cameraTranslation;
 
@@ -107,23 +107,25 @@ Matrix4x4 Camera::getCameraTranslation()
 }
 
 /******************************************************************************/
-Matrix4x4 Camera::getLookAt()
+Matrix4x4 Camera::getLookAt() const
 {
 	return _view.lookAt(Vector3(0.0, 0.0, 0.0), _rotation.getForward(), _rotation.getUp());
 }
+
 /******************************************************************************/
 /**
 	This takes the right hand persective calculations and the right hand look at
 	4 by 4 matrices and muiplies them together and gets the perspective.
 */
-Matrix4x4 Camera::getViewProjection()
+Matrix4x4 Camera::getViewProjection() const
 {
 	return _projection.perspectiveRH(_fov, _aspect, _zNear, _zFar);
 }
 
 /******************************************************************************/
-Matrix4x4 Camera::getVP()
+Matrix4x4 Camera::getVP() const
 {
-	return getViewProjection() * getLookAt() * getCameraTranslation();
+	Matrix4x4 viewProjection = getViewProjection() * getLookAt() * getCameraTranslation();
+	return viewProjection;
 }
 }; //wind
