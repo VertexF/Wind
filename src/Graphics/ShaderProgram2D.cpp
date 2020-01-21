@@ -1,39 +1,39 @@
 #include "ShaderProgram2D.h"
 
-ShaderProgram2D::ShaderProgram2D()
+namespace wind
 {
-	vertexPos2DLocation = 0;
-	texCoordLocation = 0;
 
-	textColourLocation = 0;
-	textureUnitLocation = 0;
-
-	projectionMatrixLocation = 0;
-	modelViewMatrixLocation = 0;
+/******************************************************************************/
+ShaderProgram2D::ShaderProgram2D() : _vertexPos2DLocation(0), _texCoordLocation(0),
+_textColourLocation(0), _textureUnitLocation(0), _projectionMatrixLocation(0),
+_modelViewMatrixLocation(0)
+{
 }
 
+/******************************************************************************/
 void ShaderProgram2D::enableBlend()
 {
-	//Set blending
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_DEPTH_TEST);
+    //Set blending
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
+/******************************************************************************/
 bool ShaderProgram2D::loadProgram()
 {
     buildShaders("res/2DFragShader.vsh", "res/2DFragShader.fsh");
     compileShaders();
 
-	//Check for errors
-	GLint programSuccess = GL_TRUE;
-	glGetProgramiv(programID, GL_LINK_STATUS, &programSuccess);
-	if(programSuccess != GL_TRUE)
+    //Check for errors
+    GLint programSuccess = GL_TRUE;
+    glGetProgramiv(programID, GL_LINK_STATUS, &programSuccess);
+    if (programSuccess != GL_TRUE)
     {
-		std::cerr << "Error linking program: " << programID << std::endl;
-		printProgramLog(programID);
+        std::cerr << "Error linking program: " << programID << std::endl;
+        printProgramLog(programID);
         glDeleteShader(shaders[VERTEX_SHADER]);
         glDeleteShader(shaders[FRAGMENT_SHADER]);
         glDeleteProgram(programID);
@@ -41,117 +41,132 @@ bool ShaderProgram2D::loadProgram()
         return false;
     }
 
-	//Clean up excess shader references
+    //Clean up excess shader references
     glDeleteShader(shaders[VERTEX_SHADER]);
     glDeleteShader(shaders[FRAGMENT_SHADER]);
 
-	vertexPos2DLocation = glGetAttribLocation(programID, "vertexPosition2D");
-	if(vertexPos2DLocation == -1)
-	{
-		std::cerr << "vertexPosition2D is not a valid glsl program variable!" << std::endl;
-	}
+    _vertexPos2DLocation = glGetAttribLocation(programID, "vertexPosition2D");
+    if (_vertexPos2DLocation == -1)
+    {
+        std::cerr << "vertexPosition2D is not a valid glsl program variable!" << std::endl;
+    }
 
-	texCoordLocation = glGetAttribLocation(programID, "TexCoord");
-	if(texCoordLocation == -1)
-	{
-		std::cerr << "TexCoord is not a valid glsl program variable!" << std::endl;
-	}
+    _texCoordLocation = glGetAttribLocation(programID, "TexCoord");
+    if (_texCoordLocation == -1)
+    {
+        std::cerr << "TexCoord is not a valid glsl program variable!" << std::endl;
+    }
 
-	textColourLocation = glGetUniformLocation(programID, "texColour");
-	if(textColourLocation == -1)
-	{
-		std::cerr << "textColor is not a valid glsl program variable!" << std::endl;
-	}
+    _textColourLocation = glGetUniformLocation(programID, "texColour");
+    if (_textColourLocation == -1)
+    {
+        std::cerr << "textColor is not a valid glsl program variable!" << std::endl;
+    }
 
-	textureUnitLocation = glGetUniformLocation(programID, "textureUnit");
-	if(textureUnitLocation == -1)
-	{
-		std::cerr << "textureUnit is not a valid glsl program variable!" << std::endl;
-	}
+    _textureUnitLocation = glGetUniformLocation(programID, "textureUnit");
+    if (_textureUnitLocation == -1)
+    {
+        std::cerr << "textureUnit is not a valid glsl program variable!" << std::endl;
+    }
 
-	projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
-	if(projectionMatrixLocation == -1)
-	{
-		std::cerr << "projectionMatrix is not a valid glsl program variable!" << std::endl;
-	}
+    _projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
+    if (_projectionMatrixLocation == -1)
+    {
+        std::cerr << "projectionMatrix is not a valid glsl program variable!" << std::endl;
+    }
 
-	modelViewMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
-	if(modelViewMatrixLocation == -1)
-	{
-		std::cerr << "modelViewMatrix is not a valid glsl program variable!" << std::endl;
-	}
+    _modelViewMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
+    if (_modelViewMatrixLocation == -1)
+    {
+        std::cerr << "modelViewMatrix is not a valid glsl program variable!" << std::endl;
+    }
 
-	return true;
+    return true;
 }
 
+/******************************************************************************/
 void ShaderProgram2D::setVertexPointer(GLsizei stride, const GLvoid* data)
 {
-	glVertexAttribPointer(vertexPos2DLocation, 2, GL_FLOAT, GL_FALSE, stride, data);
+    glVertexAttribPointer(_vertexPos2DLocation, 2, GL_FLOAT, GL_FALSE, stride, data);
 }
 
+/******************************************************************************/
 void ShaderProgram2D::setTexCoordPointer(GLsizei stride, const GLvoid* data)
 {
-	glVertexAttribPointer(texCoordLocation, 2, GL_FLOAT, GL_FALSE, stride, data);
+    glVertexAttribPointer(_texCoordLocation, 2, GL_FLOAT, GL_FALSE, stride, data);
 }
 
+/******************************************************************************/
 void ShaderProgram2D::enableVertexPointer()
 {
-	glEnableVertexAttribArray(vertexPos2DLocation);
+    glEnableVertexAttribArray(_vertexPos2DLocation);
 }
 
+/******************************************************************************/
 void ShaderProgram2D::disableVertexPointer()
 {
-	glDisableVertexAttribArray(vertexPos2DLocation);
+    glDisableVertexAttribArray(_vertexPos2DLocation);
 }
 
+/******************************************************************************/
 void ShaderProgram2D::enableTexCoordPointer()
 {
-	glEnableVertexAttribArray(texCoordLocation);
+    glEnableVertexAttribArray(_texCoordLocation);
 }
 
+/******************************************************************************/
 void ShaderProgram2D::disableTexCoordPointer()
 {
-	glDisableVertexAttribArray(texCoordLocation);
+    glDisableVertexAttribArray(_texCoordLocation);
 }
 
-void ShaderProgram2D::setProjection(wind::Matrix4x4 matrix)
+/******************************************************************************/
+void ShaderProgram2D::setProjection(const Matrix4x4 &matrix)
 {
-	projectionMatrix = matrix;
+    _projectionMatrix = matrix;
 }
 
-void ShaderProgram2D::setModelView(wind::Matrix4x4 matrix)
+/******************************************************************************/
+void ShaderProgram2D::setModelView(const Matrix4x4 &matrix)
 {
-	modelViewMatrix = matrix;
+    _modelViewMatrix = matrix;
 }
 
-void ShaderProgram2D::leftMultProjection(wind::Matrix4x4 matrix)
+/******************************************************************************/
+void ShaderProgram2D::leftMultProjection(const Matrix4x4 &matrix)
 {
-	projectionMatrix = projectionMatrix * matrix;
+    _projectionMatrix = _projectionMatrix * matrix;
 }
 
-void ShaderProgram2D::leftMultModelView(wind::Matrix4x4 matrix)
+/******************************************************************************/
+void ShaderProgram2D::leftMultModelView(const Matrix4x4 &matrix)
 {
-	modelViewMatrix = modelViewMatrix * matrix;
+    _modelViewMatrix = _modelViewMatrix * matrix;
 }
 
+/******************************************************************************/
 void ShaderProgram2D::updateProjection()
 {
-	projectionMatrix.getGLTransform(finalProjection);
-	glUniformMatrix4fv(projectionMatrixLocation, 1, GL_FALSE, finalProjection);
+    _projectionMatrix.getGLTransform(_finalProjection);
+    glUniformMatrix4fv(_projectionMatrixLocation, 1, GL_FALSE, _finalProjection);
 }
 
+/******************************************************************************/
 void ShaderProgram2D::updateModelView()
 {
-	modelViewMatrix.getGLTransform(finalModel);
-	glUniformMatrix4fv(modelViewMatrixLocation, 1, GL_FALSE, finalModel);
+    _modelViewMatrix.getGLTransform(_finalModel);
+    glUniformMatrix4fv(_modelViewMatrixLocation, 1, GL_FALSE, _finalModel);
 }
 
-void ShaderProgram2D::setTextColor(ColourRGBA colour)
+/******************************************************************************/
+void ShaderProgram2D::setTextColor(const ColourRGBA &colour)
 {
-	glUniform4f(textColourLocation, colour.r, colour.g, colour.b, colour.a);
+    glUniform4f(_textColourLocation, colour.r, colour.g, colour.b, colour.a);
 }
 
+/******************************************************************************/
 void ShaderProgram2D::setTextureUnit(GLuint unit)
 {
-	glUniform1i(textureUnitLocation, unit);
+    glUniform1i(_textureUnitLocation, unit);
 }
+}; //wind

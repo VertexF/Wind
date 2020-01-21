@@ -163,25 +163,25 @@ void ShaderProgram3D::disableNormalPointer()
 }
 
 /******************************************************************************/
-void ShaderProgram3D::setProjection(Matrix4x4 matrix)
+void ShaderProgram3D::setProjection(const Matrix4x4 &matrix)
 {
     _projectionMatrix = matrix;
 }
 
 /******************************************************************************/
-void ShaderProgram3D::setModelView(Matrix4x4 matrix)
+void ShaderProgram3D::setModelView(const Matrix4x4 &matrix)
 {
     _modelViewMatrix = matrix;
 }
 
 /******************************************************************************/
-void ShaderProgram3D::leftMultProjection(Matrix4x4 matrix)
+void ShaderProgram3D::leftMultProjection(const Matrix4x4 &matrix)
 {
     _projectionMatrix = _projectionMatrix * matrix;
 }
 
 /******************************************************************************/
-void ShaderProgram3D::leftMultModelView(wind::Matrix4x4 matrix)
+void ShaderProgram3D::leftMultModelView(const Matrix4x4 &matrix)
 {
     _modelViewMatrix = _modelViewMatrix * matrix;
 }

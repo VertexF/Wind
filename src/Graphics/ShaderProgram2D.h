@@ -9,57 +9,60 @@
 #include "include/ColourRGBA.h"
 #include "ShaderProgram.h"
 
+namespace wind
+{
 /**
-	In this class we are going to be using a texture, cutting it up and rendering it streght to the camera viewport using different shaders.
+    In this class we are going to be using a texture, cutting it up and rendering
+    it streght to the camera viewport using different shaders.
 */
 class ShaderProgram2D : public ShaderProgram
 {
-	public:
-		ShaderProgram2D();
+public:
+    ShaderProgram2D();
 
-		void enableBlend();
-		bool loadProgram();
+    void enableBlend();
+    bool loadProgram();
 
-		void setVertexPointer(GLsizei stride, const GLvoid* data);
-		void setTexCoordPointer(GLsizei stride, const GLvoid* data);
+    void setVertexPointer(GLsizei stride, const GLvoid* data);
+    void setTexCoordPointer(GLsizei stride, const GLvoid* data);
 
-		void enableVertexPointer();
-		void disableVertexPointer();
+    void enableVertexPointer();
+    void disableVertexPointer();
 
-		void enableTexCoordPointer();
-		void disableTexCoordPointer();
+    void enableTexCoordPointer();
+    void disableTexCoordPointer();
 
-		void setProjection(wind::Matrix4x4 matrix);
-		void setModelView(wind::Matrix4x4 matrix);
+    void setProjection(const Matrix4x4 &matrix);
+    void setModelView(const Matrix4x4 &matrix);
 
-		void leftMultProjection(wind::Matrix4x4 matrix);
-		void leftMultModelView(wind::Matrix4x4 matrix);
+    void leftMultProjection(const Matrix4x4 &matrix);
+    void leftMultModelView(const Matrix4x4 &matrix);
 
-		void updateProjection();
-		void updateModelView();
+    void updateProjection();
+    void updateModelView();
 
-		void setTextColor(ColourRGBA colour);
-		void setTextureUnit(GLuint unit);
-	private:
-		//Attribute locations
-		GLint vertexPos2DLocation;
-		GLint texCoordLocation;
+    void setTextColor(const ColourRGBA &colour);
+    void setTextureUnit(GLuint unit);
+private:
+    //Attribute locations
+    GLint _vertexPos2DLocation;
+    GLint _texCoordLocation;
 
-		//Coloring location
-		GLint textColourLocation;
+    //Coloring location
+    GLint _textColourLocation;
 
-		//Texture unit location
-		GLint textureUnitLocation;
+    //Texture unit location
+    GLint _textureUnitLocation;
 
-		//Projection matrix
-		wind::Matrix4x4 projectionMatrix;
-		GLint projectionMatrixLocation;
-		GLfloat finalProjection[16];
+    //Projection matrix
+    Matrix4x4 _projectionMatrix;
+    GLint _projectionMatrixLocation;
+    GLfloat _finalProjection[16];
 
-		//Modelview matrix
-		wind::Matrix4x4 modelViewMatrix;
-		GLint modelViewMatrixLocation;
-		GLfloat finalModel[16];
+    //Modelview matrix
+    Matrix4x4 _modelViewMatrix;
+    GLint _modelViewMatrixLocation;
+    GLfloat _finalModel[16];
 };
-
+}; //wind
 #endif

@@ -39,11 +39,11 @@ public:
     void enableNormalPointer();
     void disableNormalPointer();
 
-    void setProjection(Matrix4x4 matrix);
-    void setModelView(Matrix4x4 matrix);
+    void setProjection(const Matrix4x4 &matrix);
+    void setModelView(const Matrix4x4 &matrix);
 
-    void leftMultProjection(Matrix4x4 matrix);
-    void leftMultModelView(Matrix4x4 matrix);
+    void leftMultProjection(const Matrix4x4 &matrix);
+    void leftMultModelView(const Matrix4x4 &matrix);
 
     void setTextColor(ColourRGBA colour);
     void setTextureUnit(GLuint unit);
