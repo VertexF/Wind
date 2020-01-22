@@ -27,61 +27,43 @@ bool ShaderProgram3D::loadProgram()
     buildShaders("res/basicShader.vsh", "res/basicShader.fsh");
     compileShaders();
 
-    //Check for errors
-    GLint programSuccess = GL_TRUE;
-    glGetProgramiv(programID, GL_LINK_STATUS, &programSuccess);
-    if (programSuccess != GL_TRUE)
-    {
-        std::cerr << "Error linking program: " << programID << std::endl;
-        printProgramLog(programID);
-        glDeleteShader(shaders[VERTEX_SHADER]);
-        glDeleteShader(shaders[FRAGMENT_SHADER]);
-        glDeleteProgram(programID);
-        programID = 0;
-        return false;
-    }
-
-    //Clean up excess shader references
-    glDeleteShader(shaders[VERTEX_SHADER]);
-    glDeleteShader(shaders[FRAGMENT_SHADER]);
-
-    _vertexPos3DLocation = glGetAttribLocation(programID, "vertexPosition3D");
+    _vertexPos3DLocation = glGetAttribLocation(_programID, "vertexPosition3D");
     if (_vertexPos3DLocation == -1)
     {
         std::cerr << "vertexPosition3D is not a valid glsl program variable!" << std::endl;
     }
 
-    _texCoordLocation = glGetAttribLocation(programID, "TexCoord");
+    _texCoordLocation = glGetAttribLocation(_programID, "TexCoord");
     if (_texCoordLocation == -1)
     {
         std::cerr << "TexCoord is not a valid glsl program variable!" << std::endl;
     }
 
-    _normalLocation = glGetAttribLocation(programID, "normal");
+    _normalLocation = glGetAttribLocation(_programID, "normal");
     if (_normalLocation == -1)
     {
         std::cerr << "normal is not a valid glsl program variable!" << std::endl;
     }
 
-    _textColourLocation = glGetUniformLocation(programID, "texColour");
+    _textColourLocation = glGetUniformLocation(_programID, "texColour");
     if (_textColourLocation == -1)
     {
         std::cerr << "textColour is not a valid glsl program variable!" << std::endl;
     }
 
-    _textureUnitLocation = glGetUniformLocation(programID, "textureUnit");
+    _textureUnitLocation = glGetUniformLocation(_programID, "textureUnit");
     if (_textureUnitLocation == -1)
     {
         std::cerr << "textureUnit is not a valid glsl program variable!" << std::endl;
     }
 
-    _cameraLocation = glGetUniformLocation(programID, "camera");
+    _cameraLocation = glGetUniformLocation(_programID, "camera");
     if (_cameraLocation == -1)
     {
         std::cerr << "camera is not a valid glsl program variable!" << std::endl;
     }
 
-    _modelLocation = glGetUniformLocation(programID, "model");
+    _modelLocation = glGetUniformLocation(_programID, "model");
     if (_modelLocation == -1)
     {
         std::cerr << "model is not a valid glsl program variable!" << std::endl;

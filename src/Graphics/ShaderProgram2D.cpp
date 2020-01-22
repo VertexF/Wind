@@ -27,55 +27,37 @@ bool ShaderProgram2D::loadProgram()
     buildShaders("res/2DFragShader.vsh", "res/2DFragShader.fsh");
     compileShaders();
 
-    //Check for errors
-    GLint programSuccess = GL_TRUE;
-    glGetProgramiv(programID, GL_LINK_STATUS, &programSuccess);
-    if (programSuccess != GL_TRUE)
-    {
-        std::cerr << "Error linking program: " << programID << std::endl;
-        printProgramLog(programID);
-        glDeleteShader(shaders[VERTEX_SHADER]);
-        glDeleteShader(shaders[FRAGMENT_SHADER]);
-        glDeleteProgram(programID);
-        programID = 0;
-        return false;
-    }
-
-    //Clean up excess shader references
-    glDeleteShader(shaders[VERTEX_SHADER]);
-    glDeleteShader(shaders[FRAGMENT_SHADER]);
-
-    _vertexPos2DLocation = glGetAttribLocation(programID, "vertexPosition2D");
+    _vertexPos2DLocation = glGetAttribLocation(_programID, "vertexPosition2D");
     if (_vertexPos2DLocation == -1)
     {
         std::cerr << "vertexPosition2D is not a valid glsl program variable!" << std::endl;
     }
 
-    _texCoordLocation = glGetAttribLocation(programID, "TexCoord");
+    _texCoordLocation = glGetAttribLocation(_programID, "TexCoord");
     if (_texCoordLocation == -1)
     {
         std::cerr << "TexCoord is not a valid glsl program variable!" << std::endl;
     }
 
-    _textColourLocation = glGetUniformLocation(programID, "texColour");
+    _textColourLocation = glGetUniformLocation(_programID, "texColour");
     if (_textColourLocation == -1)
     {
         std::cerr << "textColor is not a valid glsl program variable!" << std::endl;
     }
 
-    _textureUnitLocation = glGetUniformLocation(programID, "textureUnit");
+    _textureUnitLocation = glGetUniformLocation(_programID, "textureUnit");
     if (_textureUnitLocation == -1)
     {
         std::cerr << "textureUnit is not a valid glsl program variable!" << std::endl;
     }
 
-    _projectionMatrixLocation = glGetUniformLocation(programID, "projectionMatrix");
+    _projectionMatrixLocation = glGetUniformLocation(_programID, "projectionMatrix");
     if (_projectionMatrixLocation == -1)
     {
         std::cerr << "projectionMatrix is not a valid glsl program variable!" << std::endl;
     }
 
-    _modelViewMatrixLocation = glGetUniformLocation(programID, "modelMatrix");
+    _modelViewMatrixLocation = glGetUniformLocation(_programID, "modelMatrix");
     if (_modelViewMatrixLocation == -1)
     {
         std::cerr << "modelViewMatrix is not a valid glsl program variable!" << std::endl;
