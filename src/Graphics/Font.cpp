@@ -1,18 +1,26 @@
 #include "Font.h"
+#include "ShaderProgram2D.h"
+#include "../Physics/include/Core.h"
+#include "include/TextureVertex2D.h"
+#include <iostream>
 
 namespace wind
 {
-Font::Font() : space(0),
-    lineHeight(0),
-    newLine(0)
+
+/******************************************************************************/
+Font::Font() : _space(0),
+    _lineHeight(0),
+    _newLine(0)
 {
 }
 
+/******************************************************************************/
 Font::~Font()
 {
     freeFont();
 }
 
+/******************************************************************************/
 void Font::bind(unsigned int unit)
 {
     assert(unit >= 0 && unit <= 31);
@@ -21,7 +29,8 @@ void Font::bind(unsigned int unit)
     glBindTexture(GL_TEXTURE_2D, getTextureID());
 }
 
-bool Font::loadImage(std::string filePath)
+/******************************************************************************/
+bool Font::loadImage(const std::string &filePath)
 {
     bool success = true;
 
@@ -178,9 +187,9 @@ bool Font::loadImage(std::string filePath)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-        space = cellWidth / 2;
-        newLine = aBottom - top;
-        lineHeight = bottom - top;
+        _space = cellWidth / 2;
+        _newLine = aBottom - top;
+        _lineHeight = bottom - top;
     }
     else
     {
@@ -191,16 +200,18 @@ bool Font::loadImage(std::string filePath)
     return success;
 }
 
+/******************************************************************************/
 void Font::freeFont()
 {
     freeTexture();
 
-    space = 0;
-    lineHeight = 0;
-    newLine = 0;
+    _space = 0;
+    _lineHeight = 0;
+    _newLine = 0;
 }
 
-void Font::renderText(ShaderProgram2D* fontProgram2D, GLfloat x, GLfloat y, std::string text, FontRect* area, int align)
+void Font::renderText(ShaderProgram2D *fontProgram2D, GLfloat x, GLfloat y, 
+                      const std::string &text, FontRect *area, int align)
 {
     //If there is a texture to render from
     if (getTextureID() != 0)
@@ -210,7 +221,7 @@ void Font::renderText(ShaderProgram2D* fontProgram2D, GLfloat x, GLfloat y, std:
         GLfloat dY = y;
 
         //If the text needs to be aligned
-        if (area != NULL)
+        if (area != nullptr)
         {
             //Correct empty alignment
             if (align == 0)
@@ -278,11 +289,11 @@ void Font::renderText(ShaderProgram2D* fontProgram2D, GLfloat x, GLfloat y, std:
             if (text[i] == ' ')
             {
                 wind::Matrix4x4 MV;
-                MV.setTranslation(space, 0.f, 0.f);
+                MV.setTranslation(_space, 0.f, 0.f);
                 fontProgram2D->leftMultModelView(MV);
                 fontProgram2D->updateModelView();
 
-                dX += space;
+                dX += _space;
             }
             //Newline
             else if (text[i] == '\n')
@@ -307,11 +318,11 @@ void Font::renderText(ShaderProgram2D* fontProgram2D, GLfloat x, GLfloat y, std:
 
                 //Move to target point
                 wind::Matrix4x4 MV;
-                MV.setTranslation(targetX - dX, newLine, 0.f);
+                MV.setTranslation(targetX - dX, _newLine, 0.f);
                 fontProgram2D->leftMultModelView(MV);
                 fontProgram2D->updateModelView();
 
-                dY += newLine;
+                dY += _newLine;
                 dX += targetX - dX;
             }
             //Character
@@ -325,7 +336,7 @@ void Font::renderText(ShaderProgram2D* fontProgram2D, GLfloat x, GLfloat y, std:
 
                 //Draw quad using vertex data and index data
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffers[ascii]);
-                glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, NULL);
+                glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, nullptr);
 
                 wind::Matrix4x4 MV;
                 MV.setTranslation(clip[ascii].w, 0.f, 0.f);
@@ -343,16 +354,18 @@ void Font::renderText(ShaderProgram2D* fontProgram2D, GLfloat x, GLfloat y, std:
     }
 }
 
-GLfloat Font::getLineHeight()
+/******************************************************************************/
+GLfloat Font::getLineHeight() const
 {
-    return lineHeight;
+    return _lineHeight;
 }
 
-FontRect Font::getAreaString(const std::string& text)
+/******************************************************************************/
+FontRect Font::getAreaString(const std::string& text) const
 {
     //Initialize area
     GLfloat subWidth = 0.f;
-    FontRect area = { 0.f, 0.f, subWidth, lineHeight };
+    FontRect area = { 0.f, 0.f, subWidth, _lineHeight };
 
     //Go through string
     for (int i = 0; i < text.length(); i++)
@@ -360,13 +373,13 @@ FontRect Font::getAreaString(const std::string& text)
         //Space
         if (text[i] == ' ')
         {
-            subWidth += space;
+            subWidth += _space;
         }
         //Newline
         else if (text[i] == '\n')
         {
             //Add another line
-            area.h += lineHeight;
+            area.h += _lineHeight;
 
             //Check for max width
             if (subWidth > area.w)
@@ -393,7 +406,8 @@ FontRect Font::getAreaString(const std::string& text)
     return area;
 }
 
-GLfloat Font::substringWidth(const char* subtext)
+/******************************************************************************/
+GLfloat Font::substringWidth(const char *subtext) const
 {
     GLfloat subWidth = 0.f;
 
@@ -403,7 +417,7 @@ GLfloat Font::substringWidth(const char* subtext)
         //Space
         if (subtext[i] == ' ')
         {
-            subWidth += space;
+            subWidth += _space;
         }
         //Character
         else
@@ -417,9 +431,10 @@ GLfloat Font::substringWidth(const char* subtext)
     return subWidth;
 }
 
-GLfloat Font::stringHeight(const char* text)
+/******************************************************************************/
+GLfloat Font::stringHeight(const char *text) const
 {
-    GLfloat height = lineHeight;
+    GLfloat height = _lineHeight;
 
     //Go through string
     for (int i = 0; text[i] != '\0'; i++)
@@ -427,7 +442,7 @@ GLfloat Font::stringHeight(const char* text)
         //Space
         if (text[i] == '\n')
         {
-            height += lineHeight;
+            height += _lineHeight;
         }
     }
     return height;

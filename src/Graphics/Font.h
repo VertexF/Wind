@@ -1,13 +1,8 @@
 #ifndef FONT_H
 #define FONT_H
 
-#include <iostream>
-
-#include "../Physics/include/Core.h"
-#include "ShaderProgram2D.h"
 #include "SpriteSheet.h"
 #include "include/FontRect.h"
-#include "include/TextureVertex2D.h"
 
 namespace
 {
@@ -27,6 +22,9 @@ namespace wind
 /*
     The primary function of this class is to load and cut up both TTF files and bitmap files into approate textures to be rendered.
 **/
+
+class ShaderProgram2D;
+
 class Font : public SpriteSheet
 {
 public:
@@ -34,32 +32,27 @@ public:
     ~Font();
     //This function is going to set up the text program so we can use it for what we need.
     //Note: It's a pointer arguement.
-    virtual void bind(unsigned int unit) final;
-
-    //This function is going to set up the FreeType library used for every Font object.
-    static bool initFreeType();
+    virtual void bind(unsigned int unit) override;
 
     //This function will use an image file, cut it up ready for rendering.
-    bool loadImage(std::string filePath);
-
-    //This function will use an TTF file, cut it up ready for rendering.
-    //bool loadFreeType(std::string filePath, GLuint pixelSize);
+    bool loadImage(const std::string &filePath);
 
     //This function free the font up
     void freeFont();
 
     //This is the function that is going to render the text
-    void renderText(ShaderProgram2D* fontProgram2D, GLfloat x, GLfloat y, std::string text, FontRect* area, int align = FONT_TEXT_ALIGN_LEFT);
+    void renderText(ShaderProgram2D *fontProgram2D, GLfloat x, GLfloat y, 
+                    const std::string &text, FontRect *area, int align = FONT_TEXT_ALIGN_LEFT);
 
-    GLfloat getLineHeight();
-    FontRect getAreaString(const std::string& text);
-    GLfloat substringWidth(const char* subtext);
-    GLfloat stringHeight(const char* text);
+    GLfloat getLineHeight() const;
+    FontRect getAreaString(const std::string &text) const;
+    GLfloat substringWidth(const char* subtext) const;
+    GLfloat stringHeight(const char* text) const;
 private:
     //These are the spacing varaibles.
-    GLfloat space;
-    GLfloat lineHeight;
-    GLfloat newLine;
+    GLfloat _space;
+    GLfloat _lineHeight;
+    GLfloat _newLine;
 };
 }; //wind
 #endif
