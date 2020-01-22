@@ -158,15 +158,15 @@ bool Font::loadImage(const std::string &filePath)
                     }
                 }
 
-                clip.push_back(nextClip);
+                _clip.push_back(nextClip);
                 currentChar++;
             }
         }
 
         for (int t = 0; t < 256; t++)
         {
-            clip[t].y += top;
-            clip[t].h -= top;
+            _clip[t].y += top;
+            _clip[t].h -= top;
         }
 
         if (loadTextureFromPixels8())
@@ -274,7 +274,7 @@ void Font::renderText(ShaderProgram2D *fontProgram2D, GLfloat x, GLfloat y,
         fontProgram2D->enableTexCoordPointer();
 
         //Bind vertex data
-        glBindBuffer(GL_ARRAY_BUFFER, vertexDataBuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, _vertexDataBuffer);
 
         //Set vertex data
         fontProgram2D->setVertexPointer(sizeof(TextureVertex2D), (GLvoid*)offsetof(TextureVertex2D, pos));
@@ -335,14 +335,14 @@ void Font::renderText(ShaderProgram2D *fontProgram2D, GLfloat x, GLfloat y,
                 fontProgram2D->updateModelView();
 
                 //Draw quad using vertex data and index data
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffers[ascii]);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffers[ascii]);
                 glDrawElements(GL_TRIANGLE_FAN, 4, GL_UNSIGNED_INT, nullptr);
 
                 wind::Matrix4x4 MV;
-                MV.setTranslation(clip[ascii].w, 0.f, 0.f);
+                MV.setTranslation(_clip[ascii].w, 0.f, 0.f);
                 fontProgram2D->leftMultModelView(MV);
                 fontProgram2D->updateModelView();
-                dX += clip[ascii].w;
+                dX += _clip[ascii].w;
             }
         }
 
@@ -393,7 +393,7 @@ FontRect Font::getAreaString(const std::string& text) const
         {
             //Get ASCII
             GLuint ascii = static_cast<unsigned char>(text[i]);
-            subWidth += clip[ascii].w;
+            subWidth += _clip[ascii].w;
         }
     }
 
@@ -424,7 +424,7 @@ GLfloat Font::substringWidth(const char *subtext) const
         {
             //Get ASCII
             GLuint ascii = static_cast<unsigned char>(subtext[i]);
-            subWidth += clip[ascii].w;
+            subWidth += _clip[ascii].w;
         }
     }
 
