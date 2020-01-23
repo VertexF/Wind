@@ -7,8 +7,8 @@ ShaderProgram3D::ShaderProgram3D() : _vertexPos3DLocation(0), _indicesPos3DLocat
 _texCoordLocation(0), _textColourLocation(0), _textureUnitLocation(0),
 _modelLocation(0), _cameraLocation(0), _normalLocation(0)
 {
-    glClearColor(0.9f, 0.95f, 1.0f, 1.0f);
-    glViewport(0.f, 0.f, 800, 600);
+    //glClearColor(0.9f, 0.95f, 1.0f, 1.0f);
+    //glViewport(0.f, 0.f, 800, 600);
 }
 
 /******************************************************************************/
