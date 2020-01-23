@@ -21,7 +21,6 @@ enum SpriteOrigin
     SPRITE_ORIGIN_BOTTOM_RIGHT
 };
 
-
 namespace wind
 {
 /*
