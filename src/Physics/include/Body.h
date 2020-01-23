@@ -12,259 +12,256 @@
 */
 namespace wind
 {
-    class RigidBody
+class RigidBody
+{
+public:
+    RigidBody(){}
+    //This function calculates the internal data when the state of the rigid body changes.
+    //This needs to be called when we integrate the movement of the rigid body
+    void calculateDerivedData();
+
+    //Integrates all the motion and forces to the rigid body.
+    void integrate(real duration);
+
+    /** Mass functions */
+    //Adds mass to a rigid body
+    void setMass(const real mass);
+
+    //get mass of a rigid body
+    real getMass() const;
+
+    //Sets the inverse mass
+    void setInverseMass(const real inverseMass);
+
+    bool hasInfiniteMass() const;
+
+    //returns the inverse mass.
+    real getInverseMass();
+
+    /** Inertia tensor functions */
+    void setInertiaTensor(const Matrix3 &inertiaTensor);
+
+    void getInertiaTensor(Matrix3 *inertiaTensor) const;
+
+    Matrix3 getInertiaTensor() const;
+
+    void getInertiaTensorWorld(Matrix3 *inertiaTensor) const;
+
+    Matrix3 getInertiaTensorWorld() const;
+
+    void setInverseInertiaTensor(const Matrix3 &inverseInertiaTensor);
+
+    void getInverseInertiaTensor(Matrix3* inverseInertiaTensor) const;
+
+    Matrix3 getInverseInertiaTensor() const;
+
+    void getInverseInertiaTensorWorld(Matrix3* inverseInertiaTensor) const;
+
+    Matrix3 getInverseInertiaTensorWorld() const;
+
+    /** The Damping functions */
+    void setDamping(const real linearDamp, const real angularDamp);
+
+    void setLinearDamping(const real linearDamp);
+    real getLinearDamping() const;
+
+    void setAngularDamping(const real angularDamp);
+    real getAngularDamping() const;
+
+    /** Linear movement vectors functions */
+    //Sets position
+    void setPosition(const Vector3 &pos);
+
+    //Sets position
+    void setPosition(const real x, const real y, const real z);
+
+    //Get the position vector
+    Vector3 getPosition() const;
+
+    //Get the position vector
+    void getPosition(Vector3 *pos) const;
+
+    //Sets velocity
+    void setVelocity(const Vector3 &vel);
+
+    //Sets velocity
+    void setVelocity(const real x, const real y, const real z);
+
+    //This function adds a velocity to a rigid body.
+    void addVelocity(const Vector3 &vec);
+
+    //Get the velocity vector
+    Vector3 getVelocity() const;
+
+    //Get the velocity vector
+    void getVelocity(Vector3 *vel) const;
+
+    //Sets acceleration
+    void setAcceleration(const Vector3 &accel);
+
+    //Sets acceleration
+    void setAcceleration(const real x, const real y, const real z);
+
+    //Get the acceleration vector
+    Vector3 getAcceleration() const;
+
+    //Get the acceleration vector
+    void getAcceleration(Vector3 *accel) const;
+
+    //This function gets the lastframeacceration vector.
+    Vector3 getLastFrameAcceleration() const;
+
+    //This function gets the lastframeacceration vector.
+    void getLastFrameAcceleration(Vector3 *lastFrameAcc) const;
+
+    //This function adds the torque forces together
+    void addForce(const Vector3 &force);
+
+    /** Transformation and rotation functions */
+    //Sets the rotational vector.
+    void setRotation(const real x, const real y, const real z);
+
+    //Sets the rotational vector.
+    void setRotation(const Vector3 &rot);
+
+    //Sets the rotational vector.
+    void addRotation(const Vector3 &rot);
+
+    //Get the rotational vector.
+    void getRotation(Vector3 *rot);
+
+    //Get the rotational vector.
+    Vector3 getRotation();
+
+    //Set up the quaternion and normalises the quaternion.
+    void setOrientation(const Quaternion &Orient);
+
+    //Set up the quaternion and normalises the quaternion.
+    void setOrientation(const real r, const real i, const real j, const real k);
+
+    //Gets the quaternion for orientation.
+    Quaternion getOrientation() const;
+
+    //Gets the quaternion for orientation.
+    void getOrientation(Quaternion *quat) const;
+
+    //Gets the quaternion passed in by a matrix
+    void getOrientation(real Matrix[3][3]) const;
+
+    //Gets the quaternion of the matrix based in.
+    void getOrientation(Matrix3 *matrix) const;
+
+    //Small getter and setter functions for awake and sleeping bodies.
+    bool getAwake() const
     {
-        protected:
-            //Holds the inverse mas this allows us to make rigid body moveable or immovable.
-            real inverseMass;
+        return isAwake;
+    }
 
-            //This holds the damping to linear motion. Needed to take away movement and keep things stable.
-            real linearDamping;
+    void setAwake(const bool awake = true);
 
-            //This holds the damping to angular motion. Needed to take away movement and keep things stable.
-            real angularDamping;
+    //This functions workout if a body can sleep or not.
+    void setCanSleep(const bool canSleep);
 
-            //This holds the motion of a body which allows use to handle putting bodies to sleep.
-            real motion;
+    /** Transform functions */
 
-            //This hold the angular orientation of the rigid body in world space.
-            Quaternion orientation;
+    //This function will fill the matrix in the argument with the transformation representation of the rigid body orientation.
+    void getTransform(Matrix4 *trans) const;
 
-            //This holds the linear position of the rigid body
-            Vector3 position;
+    //This function will fill the matrix array with the transformation representation of the rigid body orientation.
+    void getTransform(real matrix[16]) const;
 
-            //This holds the linear velocity of the rigid body.
-            Vector3 velocity;
+    //This function does the same as the other functions but it makes it suitable for OpenGL to use.
+    void getGLTransform(float matrix[16]) const;
 
-            //Holds the acceleration of the rigid body.
-            Vector3 acceleration;
+    //This is simply a getter function for the matrix4 transformation
+    Matrix4 getTransform() const;
 
-            //This holds the angular velocity of the rigid body.
-            Vector3 rotation;
+    /** World to local and Local to world */
+    //Converts a point from world to local.
+    Vector3 getPointInLocal(const Vector3 &point) const;
 
-            //This vector keeps track of all the added non-torque force together.
-            Vector3 forceAccum;
+    //Converts a point from local to world.
+    Vector3 getPointInWorld(const Vector3 &point) const;
 
-            //This vector keeps track of all the added torque force together.
-            Vector3 torqueAccum;
+    //This function converts the direction in world space to local space.
+    Vector3 getDirectionInLocalSpace(const Vector3 &direction) const;
 
-            //Holds the linear acceleration of the rigid body, for the previous frame.
-            Vector3 lastFrameAcceleration;
+    //This function converts the direction in local space to world space.
+    Vector3 getDirectionInWorldSpace(const Vector3 &direction) const;
 
-            //This holds the translation from world to local and local to world basis.
-            Matrix4 transformMatrix;
+    //This function returns the total accumulated force that has been accumulated through one frame.
+    //The force being returned is acceleration.
+    void getAccumlatedAcceration(Vector3 *totalAccel) const;
 
-            //This holds the inverse of the inertia tensor so we can directly calculate the angular acceleration.
-            Matrix3 inverseInertiaTensor;
+    //This function returns the total accumulated force that has been accumulated through one frame.
+    //The force being returned is acceleration.
+    Vector3 getAccumlatedAcceration();
 
-            //This holds the inverse of the inertia tensor so we can directly calculate the angular acceleration in world space.
-            Matrix3 inverseInertiaTensorWorld;
+    //Frame by frame clearing of the accumulated forces.
+    void clearAccumulator();
 
-            bool isAwake;
+    //This function adds a force to a single point of body.
+    //The force and the application  point are given in world coordinate.
+    //Because the force is not applied at the centre of mass, it may be split into both force and torque
+    void addForceAtPoint(const Vector3 &force, const Vector3 &point);
 
-			bool canSleep;
-        public:
-			RigidBody(){}
-            //This function calculates the internal data when the state of the rigid body changes.
-            //This needs to be called when we integrate the movement of the rigid body
-            void calculateDerivedData();
+    //This function adds a force to a single point of body.
+    //The force and the application  point are given in world coordinate.
+    //This force function is better for applying the force such as spring force or other forces
+    void addForceAtBodyPoint(const Vector3 &force, const Vector3 &point);
 
-            //Integrates all the motion and forces to the rigid body.
-            void integrate(real duration);
+    //This function add the torque to world coordinate
+    void addTorque(const Vector3 &torque);
+protected:
+    //Holds the inverse mas this allows us to make rigid body moveable or immovable.
+    real inverseMass;
 
-            /** Mass functions */
-            //Adds mass to a rigid body
-            void setMass(const real mass);
+    //This holds the damping to linear motion. Needed to take away movement and keep things stable.
+    real linearDamping;
 
-            //get mass of a rigid body
-            real getMass() const;
+    //This holds the damping to angular motion. Needed to take away movement and keep things stable.
+    real angularDamping;
 
-            //Sets the inverse mass
-            void setInverseMass(const real inverseMass);
+    //This holds the motion of a body which allows use to handle putting bodies to sleep.
+    real motion;
 
-            bool hasInfiniteMass() const;
+    //This hold the angular orientation of the rigid body in world space.
+    Quaternion orientation;
 
-            //returns the inverse mass.
-            real getInverseMass();
+    //This holds the linear position of the rigid body
+    Vector3 position;
 
-            /** Inertia tensor functions */
-            void setInertiaTensor(const Matrix3 &inertiaTensor);
+    //This holds the linear velocity of the rigid body.
+    Vector3 velocity;
 
-            void getInertiaTensor(Matrix3 *inertiaTensor) const;
+    //Holds the acceleration of the rigid body.
+    Vector3 acceleration;
 
-            Matrix3 getInertiaTensor() const;
+    //This holds the angular velocity of the rigid body.
+    Vector3 rotation;
 
-            void getInertiaTensorWorld(Matrix3 *inertiaTensor) const;
+    //This vector keeps track of all the added non-torque force together.
+    Vector3 forceAccum;
 
-            Matrix3 getInertiaTensorWorld() const;
+    //This vector keeps track of all the added torque force together.
+    Vector3 torqueAccum;
 
-            void setInverseInertiaTensor(const Matrix3 &inverseInertiaTensor);
+    //Holds the linear acceleration of the rigid body, for the previous frame.
+    Vector3 lastFrameAcceleration;
 
-            void getInverseInertiaTensor(Matrix3* inverseInertiaTensor) const;
+    //This holds the translation from world to local and local to world basis.
+    Matrix4 transformMatrix;
 
-            Matrix3 getInverseInertiaTensor() const;
+    //This holds the inverse of the inertia tensor so we can directly calculate the angular acceleration.
+    Matrix3 inverseInertiaTensor;
 
-            void getInverseInertiaTensorWorld(Matrix3* inverseInertiaTensor) const;
+    //This holds the inverse of the inertia tensor so we can directly calculate the angular acceleration in world space.
+    Matrix3 inverseInertiaTensorWorld;
 
-            Matrix3 getInverseInertiaTensorWorld() const;
+    bool isAwake;
 
-            /** The Damping functions */
-            void setDamping(const real linearDamp, const real angularDamp);
-
-            void setLinearDamping(const real linearDamp);
-            real getLinearDamping() const;
-
-            void setAngularDamping(const real angularDamp);
-            real getAngularDamping() const;
-
-            /** Linear movement vectors functions */
-            //Sets position
-            void setPosition(const Vector3 &pos);
-
-            //Sets position
-            void setPosition(const real x, const real y, const real z);
-
-            //Get the position vector
-            Vector3 getPosition() const;
-
-            //Get the position vector
-            void getPosition(Vector3 *pos) const;
-
-            //Sets velocity
-            void setVelocity(const Vector3 &vel);
-
-            //Sets velocity
-            void setVelocity(const real x, const real y, const real z);
-
-            //This function adds a velocity to a rigid body.
-            void addVelocity(const Vector3 &vec);
-
-            //Get the velocity vector
-            Vector3 getVelocity() const;
-
-            //Get the velocity vector
-            void getVelocity(Vector3 *vel) const;
-
-            //Sets acceleration
-            void setAcceleration(const Vector3 &accel);
-
-            //Sets acceleration
-            void setAcceleration(const real x, const real y, const real z);
-
-            //Get the acceleration vector
-            Vector3 getAcceleration() const;
-
-            //Get the acceleration vector
-            void getAcceleration(Vector3 *accel) const;
-
-            //This function gets the lastframeacceration vector.
-            Vector3 getLastFrameAcceleration() const;
-
-            //This function gets the lastframeacceration vector.
-            void getLastFrameAcceleration(Vector3 *lastFrameAcc) const;
-
-            //This function adds the torque forces together
-            void addForce(const Vector3 &force);
-
-            /** Transformation and rotation functions */
-            //Sets the rotational vector.
-            void setRotation(const real x, const real y, const real z);
-
-            //Sets the rotational vector.
-            void setRotation(const Vector3 &rot);
-
-            //Sets the rotational vector.
-            void addRotation(const Vector3 &rot);
-
-            //Get the rotational vector.
-            void getRotation(Vector3 *rot);
-
-            //Get the rotational vector.
-            Vector3 getRotation();
-
-            //Set up the quaternion and normalises the quaternion.
-            void setOrientation(const Quaternion &Orient);
-
-            //Set up the quaternion and normalises the quaternion.
-            void setOrientation(const real r, const real i, const real j, const real k);
-
-            //Gets the quaternion for orientation.
-            Quaternion getOrientation() const;
-
-            //Gets the quaternion for orientation.
-            void getOrientation(Quaternion *quat) const;
-
-            //Gets the quaternion passed in by a matrix
-            void getOrientation(real Matrix[3][3]) const;
-
-            //Gets the quaternion of the matrix based in.
-            void getOrientation(Matrix3 *matrix) const;
-
-			//Small getter and setter functions for awake and sleeping bodies.
-			bool getAwake() const
-			{
-				return isAwake;
-			}
-
-			void setAwake(const bool awake = true);
-
-			//This functions workout if a body can sleep or not.
-			void setCanSleep(const bool canSleep);
-
-            /** Transform functions */
-
-            //This function will fill the matrix in the argument with the transformation representation of the rigid body orientation.
-            void getTransform(Matrix4 *trans) const;
-
-            //This function will fill the matrix array with the transformation representation of the rigid body orientation.
-            void getTransform(real matrix[16]) const;
-
-            //This function does the same as the other functions but it makes it suitable for OpenGL to use.
-            void getGLTransform(float matrix[16]) const;
-
-            //This is simply a getter function for the matrix4 transformation
-            Matrix4 getTransform() const;
-
-            /** World to local and Local to world */
-            //Converts a point from world to local.
-            Vector3 getPointInLocal(const Vector3 &point) const;
-
-            //Converts a point from local to world.
-            Vector3 getPointInWorld(const Vector3 &point) const;
-
-            //This function converts the direction in world space to local space.
-            Vector3 getDirectionInLocalSpace(const Vector3 &direction) const;
-
-            //This function converts the direction in local space to world space.
-            Vector3 getDirectionInWorldSpace(const Vector3 &direction) const;
-
-            //This function returns the total accumulated force that has been accumulated through one frame.
-            //The force being returned is acceleration.
-            void getAccumlatedAcceration(Vector3 *totalAccel) const;
-
-            //This function returns the total accumulated force that has been accumulated through one frame.
-            //The force being returned is acceleration.
-            Vector3 getAccumlatedAcceration();
-
-            //Frame by frame clearing of the accumulated forces.
-            void clearAccumulator();
-
-            //This function adds a force to a single point of body.
-            //The force and the application  point are given in world coordinate.
-            //Because the force is not applied at the centre of mass, it may be split into both force and torque
-            void addForceAtPoint(const Vector3 &force, const Vector3 &point);
-
-            //Sets the isAwake to true.
-            //void setAwake();
-
-            //This function adds a force to a single point of body.
-            //The force and the application  point are given in world coordinate.
-            //This force function is better for applying the force such as spring force or other forces
-            void addForceAtBodyPoint(const Vector3 &force, const Vector3 &point);
-
-            //This function add the torque to world coordinate
-            void addTorque(const Vector3 &torque);
-    };
+    bool canSleep;
+};
 }
 
 #endif // BODY_H_INCLUDED
