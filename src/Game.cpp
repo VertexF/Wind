@@ -12,7 +12,7 @@ Game::Game() : RigidBodyApplication("Cube Game", 800, 600),
     cameraRot(0.0, 0.0, 0.0, 0.0),
     running(true),
     runOnce(false),
-    player1(std::make_unique<Player>(_ratio))
+    player1(std::make_shared<Player>(_ratio))
 {
     textColour.r = 1.0f;
     textColour.g = 0.5f;
@@ -31,12 +31,12 @@ Game::Game() : RigidBodyApplication("Cube Game", 800, 600),
     //Important when adding another cude make sure that you increment this number in the for loop.
     for (unsigned int i = 0; i < NUM_OF_CUBES; i++)
     {
-        objects.emplace_back(std::make_unique<Block>());
+        objects.emplace_back(std::make_shared<Block>());
     }
 
     for (unsigned int i = 0; i < NUM_OF_PLANES; i++)
     {
-        planes.emplace_back(std::make_unique<Wall>());
+        planes.emplace_back(std::make_shared<Wall>());
     }
 
     //Reset need to be called before meshes are created
@@ -45,6 +45,7 @@ Game::Game() : RigidBodyApplication("Cube Game", 800, 600),
     loadMedia();
     loadMeshes();
 
+    timeLeft = 100000;
     MidX = _width / 2;
     MidY = _height / 2;
     mousevel = 0.1;
@@ -69,6 +70,7 @@ Game::~Game()
 
 void Game::loadPrograms()
 {
+
     if (!fontProgram2D.loadProgram())
     {
         std::cerr << "Unable to load font rendering program!" << std::endl;

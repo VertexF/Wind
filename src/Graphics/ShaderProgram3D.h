@@ -57,7 +57,7 @@ public:
 
     //This template model takes in the a vector of the models of the same type and renders them.
     template<typename T>
-    void drawModels(T &mesh)
+    void drawModels(T mesh)
     {
         for (unsigned int i = 0; i < mesh.size(); i++)
         {
@@ -75,7 +75,7 @@ public:
 
     //This template model takes in the a single models of the same type and renders them.
     template<typename T>
-    void drawModel(T &mesh)
+    void drawModel(T mesh)
     {
         //Each model needs it's own matrix model for translation that's why we recreate the GLfloat[] every loop
         GLfloat tempModel[16] = { 0 };
