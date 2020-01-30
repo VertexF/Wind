@@ -408,8 +408,8 @@ void Game::handleEvents()
             wind::real camPitch = 0.0;
             int tmpx, tmpy = 0;
             SDL_GetMouseState(&tmpx, &tmpy);
-            camYaw += mousevel * (static_cast<real>(MidX) - tmpx);
-            camPitch += mousevel * (static_cast<real>(MidY) - tmpy);
+            camYaw += mousevel * (MidX - tmpx);
+            camPitch += mousevel * (MidY - tmpy);
 
             bool rotY = camPitch != 0;
             bool rotX = camYaw != 0;
