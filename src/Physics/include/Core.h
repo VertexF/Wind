@@ -543,9 +543,9 @@ namespace wind
 
             Vector3 rotate(real degree, const Vector3 &axis) const;
             Vector3 rotate(const Quaternion &rotation) const;
-            Vector3 rotate(Quaternion rotation, Vector3 vec);
-            Vector3 moveForward(Quaternion rotation);
-            Vector3 moveSidewards(Quaternion rotation);
+            Vector3 rotate(const Quaternion &rotation, const Vector3 &vec) const;
+            Vector3 moveForward(const Quaternion &rotation) const;
+            Vector3 moveSidewards(const Quaternion &rotation) const;
 
         private:
             //This variable tells us if it's a vector or a point. 1 for vector which is default 0 for a point.

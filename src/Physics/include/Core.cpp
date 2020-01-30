@@ -102,7 +102,7 @@ Vector3 Vector3::rotate(const Quaternion &rotation) const
     return Vector3(w.i, w.j, w.k);
 }
 
-Vector3 Vector3::rotate(Quaternion rotation, Vector3 vec)
+Vector3 Vector3::rotate(const Quaternion &rotation, const Vector3 &vec) const
 {
     Quaternion conjugate = rotation.conjugate();
 
@@ -112,7 +112,7 @@ Vector3 Vector3::rotate(Quaternion rotation, Vector3 vec)
     return Vector3(w.i, w.j, w.k);
 }
 
-Vector3 Vector3::moveForward(Quaternion rotation)
+Vector3 Vector3::moveForward(const Quaternion &rotation) const
 {
     Quaternion conjugate = rotation.conjugate();
 
@@ -122,7 +122,7 @@ Vector3 Vector3::moveForward(Quaternion rotation)
     return Vector3(-w.i, 0.0, w.k);
 }
 
-Vector3 Vector3::moveSidewards(Quaternion rotation)
+Vector3 Vector3::moveSidewards(const Quaternion &rotation) const
 {
     Quaternion conjugate = rotation.conjugate();
 
