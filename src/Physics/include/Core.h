@@ -533,197 +533,195 @@ namespace wind
     */
     class Quaternion
     {
-        public:
-            union
+    public:
+        union
+        {
+            struct
             {
-                struct
-                {
-                    //Hold the real component of the quaternion
-                    real r;
+                //Hold the real component of the quaternion
+                real r;
 
-                    //Holds the first complex number in the quaternion
-                    real i;
+                //Holds the first complex number in the quaternion
+                real i;
 
-                    //Holds the second complex number in the quaternion
-                    real j;
+                //Holds the second complex number in the quaternion
+                real j;
 
-                    //Holds the third complex number in the quaternion
-                    real k;
-                };
-
-                //Holds the quaternion in array form
-                real data[4];
+                //Holds the third complex number in the quaternion
+                real k;
             };
 
-            Quaternion() : r(1.0), i(0.0), j(0.0), k(0.0)
+            //Holds the quaternion in array form
+            real data[4];
+        };
+
+        Quaternion() : r(1.0), i(0.0), j(0.0), k(0.0)
+        {
+        }
+
+        Quaternion(real w, real x, real y, real z) : r(w), i(x), j(y), k(z)
+        {
+        }
+
+        Quaternion(const Vector3 &axis, real angle)
+        {
+            real sinHalfAngle = std::sin((angle * R_PI/180) / 2);
+            real cosHalfAngle = std::cos((angle * R_PI/180) / 2);
+
+            i = axis.x * sinHalfAngle;
+            j = axis.y * sinHalfAngle;
+            k = axis.z * sinHalfAngle;
+            r = cosHalfAngle;
+        }
+
+        //Quaternion subscript operator, indexes through the elements, that's how it gets the correct values.
+        real operator[](unsigned int i) const
+        {
+            return((&r)[i]);
+        }
+
+        real& operator[](unsigned int i)
+        {
+            return((&r)[i]);
+        }
+
+
+        //This function normalises the quaternion making it valid for orientation.
+        void normalise()
+        {
+            real d = r * r + i * i + j * j + k * k;
+
+            //If this is zero then this is no rotation has happened.
+            if(d < real_epsilon)
             {
+                r = 1;
+                return;
             }
 
-            Quaternion(real w, real x, real y, real z) : r(w), i(x), j(y), k(z)
-            {
-            }
+            d = 1.0 / std::sqrt(d);
 
-            Quaternion(const Vector3 &axis, real angle)
-            {
-                real sinHalfAngle = std::sin((angle * R_PI/180) / 2);
-                real cosHalfAngle = std::cos((angle * R_PI/180) / 2);
+            r *= d;
+            i *= d;
+            j *= d;
+            k *= d;
+        }
 
-                i = axis.x * sinHalfAngle;
-                j = axis.y * sinHalfAngle;
-                k = axis.z * sinHalfAngle;
-                r = cosHalfAngle;
-            }
+        //This two multiplies quaternion together(This is the same process as any other)
+        Quaternion operator*=(const Quaternion &multiplier)
+        {
+            Quaternion q = *this;
 
-            //Quaternion subscript operator, indexes through the elements, that's how it gets the correct values.
-            real operator[](unsigned int i) const
-            {
-                return((&r)[i]);
-            }
+            r = q.r * multiplier.r - q.i * multiplier.i - q.j * multiplier.j - q.k * multiplier.k;
+            i = q.r * multiplier.i + q.i * multiplier.r + q.j * multiplier.k - q.k * multiplier.j;
+            j = q.r * multiplier.j + q.j * multiplier.r + q.k * multiplier.i - q.i * multiplier.k;
+            k = q.r * multiplier.k + q.k * multiplier.r + q.i * multiplier.j - q.j * multiplier.i;
 
-            real& operator[](unsigned int i)
-            {
-                return((&r)[i]);
-            }
+            return Quaternion(r, i, j, k);
+        }
 
+        Quaternion operator*(const Quaternion &multiplier) const
+        {
+            Quaternion q = *this;
 
-            //This function normalises the quaternion making it valid for orientation.
-            void normalise()
-            {
-                real d = r * r + i * i + j * j + k * k;
+            real r = q.r * multiplier.r - q.i * multiplier.i - q.j * multiplier.j - q.k * multiplier.k;
+            real i = q.r * multiplier.i + q.i * multiplier.r + q.j * multiplier.k - q.k * multiplier.j;
+            real j = q.r * multiplier.j + q.j * multiplier.r + q.k * multiplier.i - q.i * multiplier.k;
+            real k = q.r * multiplier.k + q.k * multiplier.r + q.i * multiplier.j - q.j * multiplier.i;
 
-                //If this is zero then this is no rotation has happened.
-                if(d < real_epsilon)
-                {
-                    r = 1;
-                    return;
-                }
+            return Quaternion(r, i, j, k);
+        }
 
-                d = 1.0 / std::sqrt(d);
+        Quaternion operator*(const Vector3 &multiplier) const
+        {
+            Quaternion q = *this;
 
-                r *= d;
-                i *= d;
-                j *= d;
-                k *= d;
-            }
+            real r = -q.i * multiplier.x - q.j * multiplier.y - q.k * multiplier.z;
+            real i = q.r * multiplier.x + q.j * multiplier.z - q.k * multiplier.y;
+            real j = q.r * multiplier.y + q.k * multiplier.x - q.i * multiplier.z;
+            real k = q.r * multiplier.z + q.i * multiplier.y - q.j * multiplier.x;
 
-            //This two multiplies quaternion together(This is the same process as any other)
-            Quaternion operator*=(const Quaternion &multiplier)
-            {
-                Quaternion q = *this;
+            return Quaternion(r, i, j, k);
+        }
 
-                r = q.r * multiplier.r - q.i * multiplier.i - q.j * multiplier.j - q.k * multiplier.k;
-                i = q.r * multiplier.i + q.i * multiplier.r + q.j * multiplier.k - q.k * multiplier.j;
-                j = q.r * multiplier.j + q.j * multiplier.r + q.k * multiplier.i - q.i * multiplier.k;
-                k = q.r * multiplier.k + q.k * multiplier.r + q.i * multiplier.j - q.j * multiplier.i;
+        void rotateByVector(const Vector3 &vec)
+        {
+            Quaternion q(0, vec.x, vec.y, vec.z);
+            (*this) *= q;
+        }
 
-                return Quaternion(r, i, j, k);
-            }
+        //This function adds the give vector which is scalar value this updates the orientation of the quaternion.
+        void addScaledVector(const Vector3 &vec, real scalar)
+        {
+            Quaternion q(0, vec.x * scalar, vec.y * scalar, vec.z * scalar);
+            q *= (*this);
 
-            Quaternion operator*(const Quaternion &multiplier) const
-            {
-                Quaternion q = *this;
+            r += q.r * 0.5;
+            i += q.i * 0.5;
+            j += q.j * 0.5;
+            k += q.k * 0.5;
+        }
 
-                real r = q.r * multiplier.r - q.i * multiplier.i - q.j * multiplier.j - q.k * multiplier.k;
-                real i = q.r * multiplier.i + q.i * multiplier.r + q.j * multiplier.k - q.k * multiplier.j;
-                real j = q.r * multiplier.j + q.j * multiplier.r + q.k * multiplier.i - q.i * multiplier.k;
-                real k = q.r * multiplier.k + q.k * multiplier.r + q.i * multiplier.j - q.j * multiplier.i;
+        Quaternion conjugate() const
+        {
+            Quaternion q(r, -i, -j, -k);
+            return q;
+        }
 
-                return Quaternion(r, i, j, k);
-            }
+        /*These fucntions are the camera rotation*/
+        Vector3 getForward() const
+        {
+            //return Vector3(2.0 * (i * k - r * j), 2.0 * (j * k + r * i), 1.0 - 2.0 * (i * i + j * j));
+            return Vector3(0.0, 0.0, 1.0).rotate(*this);
+        }
 
-            Quaternion operator*(const Vector3 &multiplier) const
-            {
-                Quaternion q = *this;
+        Vector3 getBack() const
+        {
+            //return Vector3(-2.0 * (i * k - r * j), -2.0 * (j * k + r * i), -(1.0 - 2.0 * (i * i + j * j)));
+            return Vector3(0.0, 0.0, -1.0).rotate(*this);
+        }
 
-                real r = -q.i * multiplier.x - q.j * multiplier.y - q.k * multiplier.z;
-                real i = q.r * multiplier.x + q.j * multiplier.z - q.k * multiplier.y;
-                real j = q.r * multiplier.y + q.k * multiplier.x - q.i * multiplier.z;
-                real k = q.r * multiplier.z + q.i * multiplier.y - q.j * multiplier.x;
+        Vector3 getUp() const
+        {
+            //return Vector3(2.0 * (i * j + r * k), 1.0 - 2.0 * (i * i + k * k), 2.0 * (j * k - r * i));
+            Vector3 result = Vector3(0.0, 1.0, 0.0).rotate(*this);
+            //result.normalise();
+            return result;
+        }
 
-                return Quaternion(r, i, j, k);
-            }
+        Vector3 getDown() const
+        {
+            return Vector3(-2.0 * (i * j + r * k), -(1.0 - 2.0 * (i * i + k * k)), -2.0 * (j * k - r * i));
+            //return Vector3(0.0, -1.0, 0.0).rotate(*this);
+        }
 
-            void rotateByVector(const Vector3 &vec)
-            {
-                Quaternion q(0, vec.x, vec.y, vec.z);
-                (*this) *= q;
-            }
+        Vector3 getRight() const
+        {
+            Vector3 result = Vector3(1.0 - 2.0 * (j * j + k * k), 2.0 * (i * j - r * k), 2.0 * (i * k + r * j));
+            //result.normalise();
+            return result;
+            //return Vector3(1.0, 0.0, 0.0).rotate(*this);
+        }
 
-            //This function adds the give vector which is scalar value this updates the orientation of the quaternion.
-            void addScaledVector(const Vector3 &vec, real scalar)
-            {
-                Quaternion q(0, vec.x * scalar, vec.y * scalar, vec.z * scalar);
-                q *= (*this);
+        Vector3 getLeft() const
+        {
+            Vector3 result = Vector3(-(1.0 - 2.0 * (j * j + k * k)), -2.0 * (i * j - r * k), -2.0 * (i * k + r * j));
+            //result.normalise();
+            return result;
+            //return Vector3(-1.0, 0.0, 0.0).rotate(*this);
+        }
 
-                r += q.r * 0.5;
-                i += q.i * 0.5;
-                j += q.j * 0.5;
-                k += q.k * 0.5;
-            }
+        Quaternion initRotation(const Vector3 &axis, real angle) const
+        {
+            real sinHalfAngle = std::sin((angle / 2) * R_PI/180);
+            real cosHalfAngle = std::cos((angle / 2) * R_PI/180);
 
-            Quaternion conjugate() const
-            {
-                Quaternion q(r, -i, -j, -k);
-                return q;
-            }
+            real i = axis.x * sinHalfAngle;
+            real j = axis.y * sinHalfAngle;
+            real k = axis.z * sinHalfAngle;
+            real r = cosHalfAngle;
 
-            /*These fucntions are the camera rotation*/
-            Vector3 getForward() const
-            {
-                //return Vector3(2.0 * (i * k - r * j), 2.0 * (j * k + r * i), 1.0 - 2.0 * (i * i + j * j));
-                return Vector3(0.0, 0.0, 1.0).rotate(*this);
-            }
-
-            Vector3 getBack()
-            {
-                //return Vector3(-2.0 * (i * k - r * j), -2.0 * (j * k + r * i), -(1.0 - 2.0 * (i * i + j * j)));
-                return Vector3(0.0, 0.0, -1.0).rotate(*this);
-            }
-
-            Vector3 getUp() const
-            {
-                //return Vector3(2.0 * (i * j + r * k), 1.0 - 2.0 * (i * i + k * k), 2.0 * (j * k - r * i));
-                Vector3 result = Vector3(0.0, 1.0, 0.0).rotate(*this);
-                //result.normalise();
-                return result;
-            }
-
-            Vector3 getDown()
-            {
-                return Vector3(-2.0 * (i * j + r * k), -(1.0 - 2.0 * (i * i + k * k)), -2.0 * (j * k - r * i));
-                //return Vector3(0.0, -1.0, 0.0).rotate(*this);
-            }
-
-            Vector3 getRight() const
-            {
-                Vector3 result = Vector3(1.0 - 2.0 * (j * j + k * k), 2.0 * (i * j - r * k), 2.0 * (i * k + r * j));
-                //result.normalise();
-                return result;
-                //return Vector3(1.0, 0.0, 0.0).rotate(*this);
-            }
-
-            Vector3 getLeft()
-            {
-                Vector3 result = Vector3(-(1.0 - 2.0 * (j * j + k * k)), -2.0 * (i * j - r * k), -2.0 * (i * k + r * j));
-                //result.normalise();
-                return result;
-                //return Vector3(-1.0, 0.0, 0.0).rotate(*this);
-            }
-
-            Quaternion initRotation(Vector3 axis, real angle)
-            {
-                real sinHalfAngle = std::sin((angle / 2) * R_PI/180);
-                real cosHalfAngle = std::cos((angle / 2) * R_PI/180);
-
-                i = axis.x * sinHalfAngle;
-                j = axis.y * sinHalfAngle;
-                k = axis.z * sinHalfAngle;
-                r = cosHalfAngle;
-
-                return Quaternion(r, i, j, k);
-            }
-
-            //Matrix4x4 toRotation();
+            return Quaternion(r, i, j, k);
+        }
     };
 
     /**
