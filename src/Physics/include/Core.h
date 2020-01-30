@@ -1020,227 +1020,227 @@ namespace wind
     class Matrix4
     {
         public:
-            //Holds the transform matrix in vector form.
-            real data[3][4];
+        //Holds the transform matrix in vector form.
+        real data[3][4];
 
-            Matrix4()
+        Matrix4()
+        {
+            data[0][1] = data[0][2] = data[0][3] = data[1][0] = data[1][2] = data[1][3] = data[2][0] = data[2][1] = data[2][3] = 0;
+            data[0][0] = data[1][1] = data[2][2] = 1;
+        }
+
+        //This function sets the matrix to be a diagonal matrix.
+        void setDiagonal(real a, real b, real c)
+        {
+            data[0][0] = a;
+            data[1][1] = b;
+            data[2][2] = c;
+        }
+
+        //Transforms a vector by this matrix
+        Vector3 operator*(const Vector3 &vec) const
+        {
+            return Vector3(vec.x * data[0][0] +
+                            vec.y * data[0][1] +
+                            vec.z * data[0][2] + data[0][3],
+
+                            vec.x * data[1][0] +
+                            vec.y * data[1][1] +
+                            vec.z * data[1][2] + data[1][3],
+
+                            vec.x * data[2][0] +
+                            vec.y * data[2][1] +
+                            vec.z * data[2][2] + data[2][3]);
+        }
+
+        Matrix4 operator*(const Matrix4 &matrix) const
+        {
+            Matrix4 result;
+            result.data[0][0] = (matrix.data[0][0] * data[0][0]) + (matrix.data[1][0] * data[0][1]) + (matrix.data[2][0] * data[0][2]);
+            result.data[1][0] = (matrix.data[0][0] * data[1][0]) + (matrix.data[1][0] * data[1][1]) + (matrix.data[2][0] * data[1][2]);
+            result.data[2][0] = (matrix.data[0][0] * data[2][0]) + (matrix.data[1][0] * data[2][1]) + (matrix.data[2][0] * data[2][2]);
+
+            result.data[0][1] = (matrix.data[0][1] * data[0][0]) + (matrix.data[1][1] * data[0][1]) + (matrix.data[2][1] * data[0][2]);
+            result.data[1][1] = (matrix.data[0][1] * data[1][0]) + (matrix.data[1][1] * data[1][1]) + (matrix.data[2][1] * data[1][2]);
+            result.data[2][1] = (matrix.data[0][1] * data[2][0]) + (matrix.data[1][1] * data[2][1]) + (matrix.data[2][1] * data[2][2]);
+
+            result.data[0][2] = (matrix.data[0][2] * data[0][0]) + (matrix.data[1][2] * data[0][1]) + (matrix.data[2][2] * data[0][2]);
+            result.data[1][2] = (matrix.data[0][2] * data[1][0]) + (matrix.data[1][2] * data[1][1]) + (matrix.data[2][2] * data[1][2]);
+            result.data[2][2] = (matrix.data[0][2] * data[2][0]) + (matrix.data[1][2] * data[2][1]) + (matrix.data[2][2] * data[2][2]);
+
+            result.data[0][3] = (matrix.data[0][3] * data[0][0]) + (matrix.data[1][3] * data[0][1]) + (matrix.data[2][3] * data[0][2]) + data[0][3];
+            result.data[1][3] = (matrix.data[0][3] * data[1][0]) + (matrix.data[1][3] * data[1][1]) + (matrix.data[2][3] * data[1][2]) + data[1][3];
+            result.data[2][3] = (matrix.data[0][3] * data[2][0]) + (matrix.data[1][3] * data[2][1]) + (matrix.data[2][3] * data[2][2]) + data[2][3];
+
+            return result;
+        }
+
+        Vector3 transform(const Vector3 &vec) const
+        {
+            return (*this) * vec;
+        }
+
+        //Gets the the determinant for the 4 by 4 matrix.
+        real getDeterminant() const;
+
+        //This function inverts the matrix given in the arguments
+        void setInverse(const Matrix4 &matrix);
+
+        //Returns a new matrix of he inverse matrix we are currently using.
+        Matrix4 inverse()
+        {
+            Matrix4 result;
+            result.setInverse(*this);
+            return result;
+        }
+
+        //This function simply inverts the matrix
+        void invert()
+        {
+            setInverse(*this);
+        }
+
+        //This function set up the rotation matrix and the point of origin.
+        void setOrientationAndPos(const Quaternion& quat, const Vector3 &pos)
+        {
+            data[0][0] = 1 - (2 * quat.j * quat.j + 2 * quat.k * quat.k);
+            data[0][1] = 2 * quat.i * quat.j + 2 * quat.k * quat.r;
+            data[0][2] = 2 * quat.i * quat.k - 2 * quat.j * quat.r;
+            data[0][3] = pos.x;
+
+            data[1][0] = 2 * quat.i * quat.j - 2 * quat.k * quat.r;
+            data[1][1] = 1 - (2 * quat.i * quat.i + 2 * quat.k * quat.k);
+            data[1][2] = 2 * quat.j * quat.k + 2 * quat.i * quat.r;
+            data[1][3] = pos.y;
+
+            data[2][0] = 2 * quat.i * quat.k + 2 * quat.j * quat.r;
+            data[2][1] = 2 * quat.j * quat.k - 2 * quat.i * quat.r;
+            data[2][2] = 1 - (2 * quat.i * quat.i + 2 * quat.j * quat.j);
+            data[2][3] = pos.z;
+        }
+
+        //This function given vector by transformational inverse of this matrix.
+        Vector3 transformInverse(const Vector3 &vec) const
+        {
+            Vector3 temp = vec;
+            temp.x -= data[0][3];
+            temp.y -= data[1][3];
+            temp.z -= data[2][3];
+            return Vector3(temp.x * data[0][0] +
+                            temp.y * data[1][0] +
+                            temp.z * data[2][0],
+
+                            temp.x * data[0][1] +
+                            temp.y * data[1][1] +
+                            temp.z * data[2][1],
+
+                            temp.x * data[0][2] +
+                            temp.y * data[1][2] +
+                            temp.z * data[2][2]);
+        }
+
+        //This functions returns one column of the matrix and returns that to a vector
+        Vector3 getAxisVector(int i) const
+        {
+            Vector3 result;
+            for(int j = 0; j < 3; j++)
             {
-                data[0][1] = data[0][2] = data[0][3] = data[1][0] = data[1][2] = data[1][3] = data[2][0] = data[2][1] = data[2][3] = 0;
-                data[0][0] = data[1][1] = data[2][2] = 1;
+                result[j] = data[j][i];
+
             }
 
-            //This function sets the matrix to be a diagonal matrix.
-            void setDiagonal(real a, real b, real c)
-            {
-                data[0][0] = a;
-                data[1][1] = b;
-                data[2][2] = c;
-            }
+            return result;
+        }
 
-            //Transforms a vector by this matrix
-            Vector3 operator*(const Vector3 &vec) const
-            {
-                return Vector3(vec.x * data[0][0] +
-                               vec.y * data[0][1] +
-                               vec.z * data[0][2] + data[0][3],
+        //This function takes the local coordinate to a world coordinate.
+        Vector3 localToWorld(const Vector3 &local, const Matrix4 &trans)
+        {
+            return trans.transform(local);
+        }
 
-                               vec.x * data[1][0] +
-                               vec.y * data[1][1] +
-                               vec.z * data[1][2] + data[1][3],
+        //This function takes the world coordinate to a local coordinate.
+        Vector3 worldToLocalInverse(const Vector3 &world, const Matrix4 &trans)
+        {
+            Matrix4 inverseTransform;
+            inverseTransform.setInverse(trans);
 
-                               vec.x * data[2][0] +
-                               vec.y * data[2][1] +
-                               vec.z * data[2][2] + data[2][3]);
-            }
-
-            Matrix4 operator*(const Matrix4 &matrix) const
-            {
-                Matrix4 result;
-                result.data[0][0] = (matrix.data[0][0] * data[0][0]) + (matrix.data[1][0] * data[0][1]) + (matrix.data[2][0] * data[0][2]);
-                result.data[1][0] = (matrix.data[0][0] * data[1][0]) + (matrix.data[1][0] * data[1][1]) + (matrix.data[2][0] * data[1][2]);
-                result.data[2][0] = (matrix.data[0][0] * data[2][0]) + (matrix.data[1][0] * data[2][1]) + (matrix.data[2][0] * data[2][2]);
-
-                result.data[0][1] = (matrix.data[0][1] * data[0][0]) + (matrix.data[1][1] * data[0][1]) + (matrix.data[2][1] * data[0][2]);
-                result.data[1][1] = (matrix.data[0][1] * data[1][0]) + (matrix.data[1][1] * data[1][1]) + (matrix.data[2][1] * data[1][2]);
-                result.data[2][1] = (matrix.data[0][1] * data[2][0]) + (matrix.data[1][1] * data[2][1]) + (matrix.data[2][1] * data[2][2]);
-
-                result.data[0][2] = (matrix.data[0][2] * data[0][0]) + (matrix.data[1][2] * data[0][1]) + (matrix.data[2][2] * data[0][2]);
-                result.data[1][2] = (matrix.data[0][2] * data[1][0]) + (matrix.data[1][2] * data[1][1]) + (matrix.data[2][2] * data[1][2]);
-                result.data[2][2] = (matrix.data[0][2] * data[2][0]) + (matrix.data[1][2] * data[2][1]) + (matrix.data[2][2] * data[2][2]);
-
-                result.data[0][3] = (matrix.data[0][3] * data[0][0]) + (matrix.data[1][3] * data[0][1]) + (matrix.data[2][3] * data[0][2]) + data[0][3];
-                result.data[1][3] = (matrix.data[0][3] * data[1][0]) + (matrix.data[1][3] * data[1][1]) + (matrix.data[2][3] * data[1][2]) + data[1][3];
-                result.data[2][3] = (matrix.data[0][3] * data[2][0]) + (matrix.data[1][3] * data[2][1]) + (matrix.data[2][3] * data[2][2]) + data[2][3];
-
-                return result;
-            }
-
-            Vector3 transform(const Vector3 &vec) const
-            {
-                return (*this) * vec;
-            }
-
-            //Gets the the determinant for the 4 by 4 matrix.
-            real getDeterminant() const;
-
-            //This function inverts the matrix given in the arguments
-            void setInverse(const Matrix4 &matrix);
-
-            //Returns a new matrix of he inverse matrix we are currently using.
-            Matrix4 inverse()
-            {
-                Matrix4 result;
-                result.setInverse(*this);
-                return result;
-            }
-
-            //This function simply inverts the matrix
-            void invert()
-            {
-                setInverse(*this);
-            }
-
-            //This function set up the rotation matrix and the point of origin.
-            void setOrientationAndPos(const Quaternion& quat, const Vector3 &pos)
-            {
-                data[0][0] = 1 - (2 * quat.j * quat.j + 2 * quat.k * quat.k);
-                data[0][1] = 2 * quat.i * quat.j + 2 * quat.k * quat.r;
-                data[0][2] = 2 * quat.i * quat.k - 2 * quat.j * quat.r;
-                data[0][3] = pos.x;
-
-                data[1][0] = 2 * quat.i * quat.j - 2 * quat.k * quat.r;
-                data[1][1] = 1 - (2 * quat.i * quat.i + 2 * quat.k * quat.k);
-                data[1][2] = 2 * quat.j * quat.k + 2 * quat.i * quat.r;
-                data[1][3] = pos.y;
-
-                data[2][0] = 2 * quat.i * quat.k + 2 * quat.j * quat.r;
-                data[2][1] = 2 * quat.j * quat.k - 2 * quat.i * quat.r;
-                data[2][2] = 1 - (2 * quat.i * quat.i + 2 * quat.j * quat.j);
-                data[2][3] = pos.z;
-            }
-
-            //This function given vector by transformational inverse of this matrix.
-            Vector3 transformInverse(const Vector3 &vec) const
-            {
-                Vector3 temp = vec;
-                temp.x -= data[0][3];
-                temp.y -= data[1][3];
-                temp.z -= data[2][3];
-                return Vector3(temp.x * data[0][0] +
-                               temp.y * data[1][0] +
-                               temp.z * data[2][0],
-
-                                temp.x * data[0][1] +
-                                temp.y * data[1][1] +
-                                temp.z * data[2][1],
-
-                                temp.x * data[0][2] +
-                                temp.y * data[1][2] +
-                                temp.z * data[2][2]);
-            }
-
-            //This functions returns one column of the matrix and returns that to a vector
-            Vector3 getAxisVector(int i) const
-            {
-                Vector3 result;
-                for(int j = 0; j < 3; j++)
-                {
-                    result[j] = data[j][i];
-
-                }
-
-                return result;
-            }
-
-            //This function takes the local coordinate to a world coordinate.
-            Vector3 localToWorld(const Vector3 &local, const Matrix4 &trans)
-            {
-                return trans.transform(local);
-            }
-
-            //This function takes the world coordinate to a local coordinate.
-            Vector3 worldToLocalInverse(const Vector3 &world, const Matrix4 &trans)
-            {
-                Matrix4 inverseTransform;
-                inverseTransform.setInverse(trans);
-
-                return inverseTransform.transform(world);
-            }
+            return inverseTransform.transform(world);
+        }
 
 
-            Vector3 worldToLocal(const Vector3 &world, const Matrix4 &trans)
-            {
-                return trans.transformInverse(world);
-            }
+        Vector3 worldToLocal(const Vector3 &world, const Matrix4 &trans)
+        {
+            return trans.transformInverse(world);
+        }
 
-            //This is a special function which allows transformation for a 3 by 4 matrix to a direction vector.
-            Vector3 transformDirection(const Vector3 &vec) const
-            {
+        //This is a special function which allows transformation for a 3 by 4 matrix to a direction vector.
+        Vector3 transformDirection(const Vector3 &vec) const
+        {
 
-                return Vector3(vec.x * data[0][0] +
-                               vec.y * data[0][1] +
-                               vec.z * data[0][2],
+            return Vector3(vec.x * data[0][0] +
+                            vec.y * data[0][1] +
+                            vec.z * data[0][2],
 
-                               vec.x * data[1][0] +
-                               vec.y * data[1][1] +
-                               vec.z * data[1][2],
+                            vec.x * data[1][0] +
+                            vec.y * data[1][1] +
+                            vec.z * data[1][2],
 
-                               vec.x * data[2][0] +
-                               vec.y * data[2][1] +
-                               vec.z * data[2][2]);
-            }
+                            vec.x * data[2][0] +
+                            vec.y * data[2][1] +
+                            vec.z * data[2][2]);
+        }
 
-            //This is a special function which allows transformation for a 3 by 4 matrix to a direction vector and inverses it.
-            Vector3 transformInverseDirection(const Vector3 &vec) const
-            {
-                return Vector3(vec.x * data[0][0] +
-                               vec.y * data[1][0] +
-                               vec.z * data[2][0],
+        //This is a special function which allows transformation for a 3 by 4 matrix to a direction vector and inverses it.
+        Vector3 transformInverseDirection(const Vector3 &vec) const
+        {
+            return Vector3(vec.x * data[0][0] +
+                            vec.y * data[1][0] +
+                            vec.z * data[2][0],
 
-                               vec.x * data[0][1] +
-                               vec.y * data[1][1] +
-                               vec.z * data[2][1],
+                            vec.x * data[0][1] +
+                            vec.y * data[1][1] +
+                            vec.z * data[2][1],
 
-                               vec.x * data[0][2] +
-                               vec.y * data[1][2] +
-                               vec.z * data[2][2]);
-            }
+                            vec.x * data[0][2] +
+                            vec.y * data[1][2] +
+                            vec.z * data[2][2]);
+        }
 
-            //This function returns the local coordinate from world coordinate for the directional vector.
-            Vector3 localToWorldDir(const Vector3 &local, const Matrix4 &trans)
-            {
-                return trans.transformDirection(local);
-            }
+        //This function returns the local coordinate from world coordinate for the directional vector.
+        Vector3 localToWorldDir(const Vector3 &local, const Matrix4 &trans)
+        {
+            return trans.transformDirection(local);
+        }
 
-            //This function returns the local coordinate from world coordinate for the directional vector.
-            Vector3 worldToLocalDir(const Vector3 &world, const Matrix4 &trans)
-            {
-                return trans.transformInverseDirection(world);
-            }
+        //This function returns the local coordinate from world coordinate for the directional vector.
+        Vector3 worldToLocalDir(const Vector3 &world, const Matrix4 &trans)
+        {
+            return trans.transformInverseDirection(world);
+        }
 
-            //This set our 3 by 4 matrix into a GL array so it can used for rendering.
-            void fillGLArray(float GLarray[16]) const
-            {
-                GLarray[0] = static_cast<float>(data[0][0]);
-                GLarray[1] = static_cast<float>(data[1][0]);
-                GLarray[2] = static_cast<float>(data[2][0]);
-                GLarray[3] = 0.f;
+        //This set our 3 by 4 matrix into a GL array so it can used for rendering.
+        void fillGLArray(float GLarray[16]) const
+        {
+            GLarray[0] = static_cast<float>(data[0][0]);
+            GLarray[1] = static_cast<float>(data[1][0]);
+            GLarray[2] = static_cast<float>(data[2][0]);
+            GLarray[3] = 0.f;
 
-                GLarray[4] = static_cast<float>(data[0][1]);
-                GLarray[5] = static_cast<float>(data[1][1]);
-                GLarray[6] = static_cast<float>(data[2][1]);
-                GLarray[7] = 0.f;
+            GLarray[4] = static_cast<float>(data[0][1]);
+            GLarray[5] = static_cast<float>(data[1][1]);
+            GLarray[6] = static_cast<float>(data[2][1]);
+            GLarray[7] = 0.f;
 
-                GLarray[8] = static_cast<float>(data[0][2]);
-                GLarray[9] = static_cast<float>(data[1][2]);
-                GLarray[10] = static_cast<float>(data[2][2]);
-                GLarray[11] = 0.f;
+            GLarray[8] = static_cast<float>(data[0][2]);
+            GLarray[9] = static_cast<float>(data[1][2]);
+            GLarray[10] = static_cast<float>(data[2][2]);
+            GLarray[11] = 0.f;
 
-                GLarray[12] = static_cast<float>(data[0][3]);
-                GLarray[13] = static_cast<float>(data[1][3]);
-                GLarray[14] = static_cast<float>(data[2][3]);
-                GLarray[15] = 1.f;
-            }
+            GLarray[12] = static_cast<float>(data[0][3]);
+            GLarray[13] = static_cast<float>(data[1][3]);
+            GLarray[14] = static_cast<float>(data[2][3]);
+            GLarray[15] = 1.f;
+        }
     };
 
     /**
@@ -1305,7 +1305,7 @@ namespace wind
                 return *this;
             }
 
-            Matrix4x4 setTranslation(const real& x, const real& y, const real& z)
+            Matrix4x4 setTranslation(real x, real y, real z)
             {
                 data[0][0] = 1; data[0][1] = 0; data[0][2] = 0; data[0][3] = x;
                 data[1][0] = 0; data[1][1] = 1; data[1][2] = 0; data[1][3] = y;
@@ -1316,7 +1316,7 @@ namespace wind
             }
 
 
-            Matrix4x4 initRotation(Vector3 forward, Vector3 up)
+            Matrix4x4 initRotation(const Vector3 &forward, const Vector3 &up) const
             {
                 Vector3 f = forward;
                 f.normalise();
@@ -1330,7 +1330,7 @@ namespace wind
                 return initRotation(f, u, r);
             }
 
-            Matrix4x4 initRotation(Vector3 forward, Vector3 up, Vector3 right)
+            Matrix4x4 initRotation(const Vector3 &forward, const Vector3 &up, const Vector3 &right) const
             {
                 Matrix4x4 result;
                 Vector3 f = forward;
