@@ -276,18 +276,18 @@ namespace wind
             const static Vector3 Y;
             const static Vector3 Z;
 
-            real operator[](const unsigned int &i) const
+            real operator[](unsigned int i) const
             {
                 return((&x)[i]);
             }
 
-            real& operator[](const unsigned int &i)
+            real& operator[](unsigned int i)
             {
                 return((&x)[i]);
             }
 
             //Multiplies the vectors to give a scalar value.
-            void operator*=(const real &value)
+            void operator*=(real value)
             {
                 x *= value;
                 y *= value;
@@ -295,7 +295,7 @@ namespace wind
             }
 
             //Returns a copy of the give in the arguments
-            Vector3 operator*(const real& value) const
+            Vector3 operator*(real value) const
             {
                 return Vector3(x * value, y * value, z * value);
             }
@@ -307,7 +307,7 @@ namespace wind
             }
 
             //Divides the vectors to give a scalar value.
-            void operator/=(const real& value)
+            void operator/=(real value)
             {
                 assert(value != 0);
 
@@ -317,7 +317,7 @@ namespace wind
             }
 
             //Returns a copy of the give in the arguments
-            Vector3 operator/(const real& value) const
+            Vector3 operator/(real value) const
             {
                 assert(value != 0);
 
@@ -428,14 +428,14 @@ namespace wind
             }
 
             // Limits the size of the vector to the given maximum.
-            void Trim(const real& Size)
+            void Trim(real size)
             {
-                if(squareMagnitude() > Size * Size)
+                if(squareMagnitude() > size * size)
                 {
                     normalise();
-                    x *= Size;
-                    y *= Size;
-                    z *= Size;
+                    x *= size;
+                    y *= size;
+                    z *= size;
                 }
             }
 
@@ -467,7 +467,7 @@ namespace wind
             }
 
             //This function is used for adding vectors together and then scales it up.
-            void addScaledVector(const Vector3& vec, const real& scale)
+            void addScaledVector(const Vector3& vec, real scale)
             {
                 x += vec.x * scale;
                 y += vec.y * scale;
@@ -583,12 +583,12 @@ namespace wind
             }
 
             //Quaternion subscript operator, indexes through the elements, that's how it gets the correct values.
-            real operator[](const unsigned int& i) const
+            real operator[](unsigned int i) const
             {
                 return((&r)[i]);
             }
 
-            real& operator[](const unsigned int& i)
+            real& operator[](unsigned int i)
             {
                 return((&r)[i]);
             }
