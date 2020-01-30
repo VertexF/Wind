@@ -52,7 +52,7 @@ namespace wind
             //Set all vectors to zero.
             Vector2() : x(0.0), y(0.0) {}
             //Sets up the vectors
-            Vector2(const real x, const real y) : x(x), y(y){}
+            Vector2(real x, real y) : x(x), y(y){}
 
             real operator[](unsigned int i) const
             {
@@ -256,7 +256,7 @@ namespace wind
             //Set all vectors to zero.
             Vector3() : x(0.0), y(0.0), z(0.0), pad(1.0) {}
             //Sets up the vectors
-            Vector3(const real x, const real y, const real z) : x(x), y(y), z(z), pad(1.0) {}
+            Vector3(real x, real y, real z) : x(x), y(y), z(z), pad(1.0) {}
 
             //These hold static vector objects that will be used for different things in the engine.
             const static Vector3 GRAVITY;
@@ -563,7 +563,7 @@ namespace wind
             {
             }
 
-            Quaternion(Vector3 axis, real angle)
+            Quaternion(const Vector3 &axis, real angle)
             {
                 real sinHalfAngle = std::sin((angle * R_PI/180) / 2);
                 real cosHalfAngle = std::cos((angle * R_PI/180) / 2);
@@ -619,7 +619,7 @@ namespace wind
                 return Quaternion(r, i, j, k);
             }
 
-            Quaternion operator*(const Quaternion &multiplier)
+            Quaternion operator*(const Quaternion &multiplier) const
             {
                 Quaternion q = *this;
 
