@@ -278,28 +278,12 @@ namespace wind
 
             real operator[](const unsigned int &i) const
             {
-                if(i == 0)
-                {
-                    return x;
-                }
-                if(i == 1)
-                {
-                    return y;
-                }
-                return z;
+                return((&x)[i]);
             }
 
             real& operator[](const unsigned int &i)
             {
-                if(i == 0)
-                {
-                    return x;
-                }
-                if(i == 1)
-                {
-                    return y;
-                }
-                return z;
+                return((&x)[i]);
             }
 
             //Multiplies the vectors to give a scalar value.
