@@ -54,22 +54,14 @@ namespace wind
             //Sets up the vectors
             Vector2(const real x, const real y) : x(x), y(y){}
 
-            real operator[](const unsigned int& i) const
+            real operator[](unsigned int i) const
             {
-                if(i == 0)
-                {
-                    return x;
-                }
-                return y;
+                return ((&x)[i]);
             }
 
-            real& operator[](const unsigned int& i)
+            real& operator[](unsigned int i)
             {
-                if(i == 0)
-                {
-                    return x;
-                }
-                return y;
+                return ((&x)[i]);
             }
 
             //This overloader operator checks to see if two vectors are the same.
@@ -79,14 +71,14 @@ namespace wind
             }
 
             //Multiplies the vectors to give a scalar value.
-            void operator*=(const real& value)
+            void operator*=(real value)
             {
                 x *= value;
                 y *= value;
             }
 
             //Returns a copy of the give in the arguments
-            Vector2 operator*(const real& value) const
+            Vector2 operator*(real value) const
             {
                 return Vector2(x * value, y * value);
             }
@@ -177,13 +169,13 @@ namespace wind
             }
 
             // Limits the size of the vector to the given maximum.
-            void Trim(real Size)
+            void Trim(real size)
             {
-                if(squareMagnitude() > Size * Size)
+                if(squareMagnitude() > size * size)
                 {
                     normalise();
-                    x *= Size;
-                    y *= Size;
+                    x *= size;
+                    y *= size;
                 }
             }
 
@@ -231,7 +223,7 @@ namespace wind
             }
 
             //This function returns the normal of a vector that this class is currently handling.
-            Vector2 UnitVector()
+            Vector2 UnitVector() const
             {
                 Vector2 Result = *this;
                 Result.normalise();
@@ -239,7 +231,7 @@ namespace wind
             }
 
             //This only works in 2D, it takes a degree value turns it into a radian and uses the rotation formula for to rotate the vector.
-            Vector2 rotate(real degree)
+            Vector2 rotate(real degree) const
             {
                 real radian = degree * R_PI / 180.0;
                 real rotcos = std::cos(radian);
