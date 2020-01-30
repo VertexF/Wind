@@ -731,285 +731,285 @@ namespace wind
     class Matrix3
     {
         public:
-            //Hold the tensor matrix data in vector form.
-            real data[3][3];
+        //Hold the tensor matrix data in vector form.
+        real data[3][3];
 
-            //Constructs a new matrix
-            Matrix3()
+        //Constructs a new matrix
+        Matrix3()
+        {
+            data[0][0] = data[0][1] = data[0][2] = 0;
+            data[1][0] = data[1][1] = data[1][2] = 0;
+            data[2][0] = data[2][1] = data[2][2] = 0;
+        }
+
+        //Constructs a new matrix with arguments
+        Matrix3(real m0, real m1, real m2, real m3, real m4, real m5, real m6, real m7, real m8)
+        {
+            data[0][0] = m0; data[0][1] = m1; data[0][2] = m2;
+            data[1][0] = m3; data[1][1] = m4; data[1][2] = m5;
+            data[2][0] = m6; data[2][1] = m7; data[2][2] = m8;
+        }
+
+        //Sets up the matrix using vectors.
+        Matrix3(const Vector3 &vec1, const Vector3 &vec2, const Vector3 &vec3)
+        {
+            setComponents(vec1, vec2, vec3);
+        }
+
+        //This function sets up the matrix to hold values in a diagonal matrix.
+        //This function uses the setInertiaTensor to set up the matrix for the diagonal matrix.
+        void setDiagonal(real a, real b, real c)
+        {
+            setInertiaTensorCoeff(a, b, c);
+        }
+
+        //This function sets the values for the inertia tensor
+        void setInertiaTensorCoeff(real ix, real iy, real iz, real ixy = 0, real ixz = 0, real iyz = 0)
+        {
+            data[0][0] = ix;
+            data[0][1] = data[1][0] = -ixy;
+            data[0][1] = data[2][0] = -ixz;
+            data[1][1] = iy;
+            data[1][2] = data[2][1] = -iyz;
+            data[2][2] = iz;
+        }
+
+        //Sets the values of the matrix to an inertia tensor of a rectangle block aligned, with the body's coordinates system, ie the local basis.
+        //Give the axis half size and mass.
+        void setBlockInertiaTensor(const Vector3 &halfSize, real mass)
+        {
+            Vector3 square = halfSize.componentProduct(halfSize);
+
+            setInertiaTensorCoeff(0.3 * mass * (square.y + square.z), 0.3 * mass * (square.x + square.z), 0.3 * mass * (square.x + square.y));
+        }
+
+        //Sets the matrix to be a skew symmetric matrix based on the given vector.
+        //The skew symmetric matrix is the same as the vector product.
+        //So if we have two vectors a x b = c, c is a skewed symmetric form of a.
+        //We apply this to our 3 by 3 matrix.
+        void setSkewSymmetric(const Vector3 &vec)
+        {
+            data[0][0] = data[1][1] = data[2][2] = 0;
+            data[0][1] = -vec.z;
+            data[0][2] = vec.y;
+            data[1][0] = vec.z;
+            data[1][2] = -vec.x;
+            data[2][0] = -vec.y;
+            data[2][1] = vec.x;
+        }
+
+        //Overloads the multiplication operator, multiplying the 3 by 3 matrix with the core vector.
+        Vector3 operator*(const Vector3 &vec) const
+        {
+            return Vector3(
+                    vec.x * data[0][0] + vec.y * data[0][1] + vec.z * data[0][2],
+                    vec.x * data[1][0] + vec.y * data[1][1] + vec.z * data[1][2],
+                    vec.x * data[2][0] + vec.y * data[2][1] + vec.z * data[2][2]);
+        }
+
+        //Multiplies a 3 by 3 matrix with another.
+        Matrix3 operator*(const Matrix3 &matrix) const
+        {
+            return Matrix3(data[0][0] * matrix.data[0][0] + data[0][1] * matrix.data[1][0] + data[0][2] * matrix.data[2][0],
+                            data[0][0] * matrix.data[0][1] + data[0][1] * matrix.data[1][1] + data[0][2] * matrix.data[2][1],
+                            data[0][0] * matrix.data[0][2] + data[0][1] * matrix.data[1][2] + data[0][2] * matrix.data[2][2],
+
+                            data[1][0] * matrix.data[0][0] + data[1][1] * matrix.data[1][0] + data[1][2] * matrix.data[2][0],
+                            data[1][0] * matrix.data[0][1] + data[1][1] * matrix.data[1][1] + data[1][2] * matrix.data[2][1],
+                            data[1][0] * matrix.data[0][2] + data[1][1] * matrix.data[1][2] + data[1][2] * matrix.data[2][2],
+
+                            data[2][0] * matrix.data[0][0] + data[2][1] * matrix.data[1][0] + data[2][2] * matrix.data[2][0],
+                            data[2][0] * matrix.data[0][1] + data[2][1] * matrix.data[1][1] + data[2][2] * matrix.data[2][1],
+                            data[2][0] * matrix.data[0][2] + data[2][1] * matrix.data[1][2] + data[2][2] * matrix.data[2][2]
+                            );
+        }
+
+        void operator*=(const Matrix3 &matrix)
+        {
+            real t1, t2, t3;
+            t1 = data[0][0] * matrix.data[0][0] + data[0][1] * matrix.data[1][0] + data[0][2] * matrix.data[2][0];
+            t2 = data[0][0] * matrix.data[0][1] + data[0][1] * matrix.data[1][1] + data[0][2] * matrix.data[2][1];
+            t3 = data[0][0] * matrix.data[0][2] + data[0][1] * matrix.data[1][2] + data[0][2] * matrix.data[2][2];
+            data[0][0] = t1;
+            data[0][1] = t2;
+            data[0][2] = t3;
+
+            t1 = data[1][0] * matrix.data[0][0] + data[1][1] * matrix.data[1][0] + data[1][2] * matrix.data[2][0];
+            t2 = data[1][0] * matrix.data[0][1] + data[1][1] * matrix.data[1][1] + data[1][2] * matrix.data[2][1];
+            t3 = data[1][0] * matrix.data[0][2] + data[1][1] * matrix.data[1][2] + data[1][2] * matrix.data[2][2],
+            data[1][0] = t1;
+            data[1][1] = t2;
+            data[1][2] = t3;
+
+            t1 = data[2][0] * matrix.data[0][0] + data[2][1] * matrix.data[1][0] + data[2][2] * matrix.data[2][0];
+            t2 = data[2][0] * matrix.data[0][1] + data[2][1] * matrix.data[1][1] + data[2][2] * matrix.data[2][1];
+            t3 = data[2][0] * matrix.data[0][2] + data[2][1] * matrix.data[1][2] + data[2][2] * matrix.data[2][2];
+            data[2][0] = t1;
+            data[2][1] = t2;
+            data[2][2] = t3;
+        }
+
+        //This multiplies a given matrix by a scalar
+        void operator*=(const real &scalar)
+        {
+            data[0][0] *= scalar; data[0][1] *= scalar; data[0][2] *= scalar;
+            data[1][0] *= scalar; data[1][1] *= scalar; data[1][2] *= scalar;
+            data[2][0] *= scalar; data[2][1] *= scalar; data[2][2] *= scalar;
+        }
+
+        //Simply adds the matrix given to the current matrix
+        void operator+=(const Matrix3 &matrix)
+        {
+            data[0][0] += matrix.data[0][0]; data[0][1] += matrix.data[0][1]; data[0][2] += matrix.data[0][2];
+            data[1][0] += matrix.data[1][0]; data[1][1] += matrix.data[1][1]; data[1][2] += matrix.data[1][2];
+            data[2][0] += matrix.data[2][0]; data[2][1] += matrix.data[2][1]; data[2][2] += matrix.data[2][2];
+        }
+
+        //This functions takes any matrix and sets up the idenity but overwrites any other value.
+        Matrix3 setIdentity()
+        {
+            data[0][0] = 1; data[0][1] = 0; data[0][2] = 0;
+            data[1][0] = 0; data[1][1] = 1; data[1][2] = 0;
+            data[2][0] = 0; data[2][1] = 0; data[2][2] = 1;
+
+            return *this;
+        }
+
+        real getDeterminant() const
+        {
+            return(data[0][0] * (data[1][1] * data[2][2] - data[1][2] * data[2][1]) -
+            data[0][1] * (data[1][0] * data[2][2] - data[1][2] * data[2][0]) +
+            data[0][2] * (data[1][0] * data[2][1] - data[1][1] * data[2][0]));
+        }
+
+        real getDeterminant(real eigen) const
+        {
+            return((data[0][0] - eigen) * ((data[1][1] - eigen) * (data[2][2] - eigen) - data[1][2] * data[2][1]) -
+            data[0][1] * (data[1][0] * (data[2][2] - eigen) - data[1][2] * data[2][0]) +
+            data[0][2] * (data[1][0] * data[2][1] - (data[1][1] - eigen) * data[2][0]));
+        }
+
+
+        //This functions transforms a matrix by multiplying by a vector.
+        Vector3 transform(const Vector3 &vec) const
+        {
+            return (*this) * vec;
+        }
+
+        //This function returns a vector which is transformed by the current matrix.
+        Vector3 transformTranspose(const Vector3& vec)
+        {
+            return Vector3(vec.x * data[0][0] + vec.y * data[1][0] + vec.z * data[2][0],
+                            vec.x * data[0][1] + vec.y * data[1][1] + vec.z * data[2][1],
+                            vec.x * data[0][2] + vec.y * data[1][2] + vec.z * data[2][2]);
+        }
+
+        //This function simply returns a row(which is the column of the current matrix) in a vector
+        Vector3 getRowVector(int i)
+        {
+            return Vector3(data[i][0], data[i + 1][0], data[i + 2][0]);
+        }
+
+        //This function simply returns an axis(which is the column of the current matrix) in a vector
+        Vector3 getAxisVector(int i)
+        {
+            return Vector3(data[0][i], data[0][i + 1], data[0][i + 2]);
+        }
+
+        /**This function inverts the matrix*/
+        void setInverse(const Matrix3 &matrix)
+        {
+            real t1 = matrix.data[0][0] * matrix.data[1][1];
+            real t2 = matrix.data[0][0] * matrix.data[1][2];
+
+            real t3 = matrix.data[0][1] * matrix.data[1][0];
+            real t4 = matrix.data[0][2] * matrix.data[1][0];
+
+            real t5 = matrix.data[0][1] * matrix.data[2][0];
+            real t6 = matrix.data[0][2] * matrix.data[2][0];
+
+            //Now to calculate the determinant.
+            real det = (t1 * matrix.data[2][2] - t2 * matrix.data[2][1] - t3 * matrix.data[2][2] +
+                        t4 * matrix.data[2][1] + t5 * matrix.data[1][2] - t6 * matrix.data[1][1]);
+
+            //This is to make sure we do not divide
+            if(det == (real)0.0)
             {
-                data[0][0] = data[0][1] = data[0][2] = 0;
-                data[1][0] = data[1][1] = data[1][2] = 0;
-                data[2][0] = data[2][1] = data[2][2] = 0;
+                return;
             }
 
-            //Constructs a new matrix with arguments
-            Matrix3(real m0, real m1, real m2, real m3, real m4, real m5, real m6, real m7, real m8)
-            {
-                data[0][0] = m0; data[0][1] = m1; data[0][2] = m2;
-                data[1][0] = m3; data[1][1] = m4; data[1][2] = m5;
-                data[2][0] = m6; data[2][1] = m7; data[2][2] = m8;
-            }
+            real invd = (real)1.0 / det;
 
-            //Sets up the matrix using vectors.
-            Matrix3(const Vector3 &vec1, const Vector3 &vec2, const Vector3 &vec3)
-            {
-                setComponents(vec1, vec2, vec3);
-            }
+            data[0][0] = (matrix.data[1][1] * matrix.data[2][2] - matrix.data[1][2] * matrix.data[2][1]) * invd;
+            data[0][1] = -(matrix.data[0][1] * matrix.data[2][2] - matrix.data[0][2] * matrix.data[2][1]) * invd;
+            data[0][2] = (matrix.data[0][1] * matrix.data[1][2] - matrix.data[0][2] * matrix.data[1][1]) * invd;
 
-            //This function sets up the matrix to hold values in a diagonal matrix.
-            //This function uses the setInertiaTensor to set up the matrix for the diagonal matrix.
-            void setDiagonal(real a, real b, real c)
-            {
-                setInertiaTensorCoeff(a, b, c);
-            }
+            data[1][0] = -(matrix.data[1][0] * matrix.data[2][2]- matrix.data[1][2] * matrix.data[2][0]) * invd;
+            data[1][1] = (matrix.data[0][0] * matrix.data[2][2] - t6) * invd;
+            data[1][2] = -(t2 - t4) * invd;
 
-            //This function sets the values for the inertia tensor
-            void setInertiaTensorCoeff(real ix, real iy, real iz, real ixy = 0, real ixz = 0, real iyz = 0)
-            {
-                data[0][0] = ix;
-                data[0][1] = data[1][0] = -ixy;
-                data[0][1] = data[2][0] = -ixz;
-                data[1][1] = iy;
-                data[1][2] = data[2][1] = -iyz;
-                data[2][2] = iz;
-            }
+            data[2][0] = (matrix.data[1][0] * matrix.data[2][1] - matrix.data[1][1] * matrix.data[2][0]) * invd;
+            data[2][1] = -(matrix.data[0][0] * matrix.data[2][1] - t5) * invd;
+            data[2][2] = (t1 - t3) * invd;
 
-            //Sets the values of the matrix to an inertia tensor of a rectangle block aligned, with the body's coordinates system, ie the local basis.
-            //Give the axis half size and mass.
-            void setBlockInertiaTensor(const Vector3 &halfSize, real mass)
-            {
-                Vector3 square = halfSize.componentProduct(halfSize);
+        }
 
-                setInertiaTensorCoeff(0.3 * mass * (square.y + square.z), 0.3 * mass * (square.x + square.z), 0.3 * mass * (square.x + square.y));
-            }
+        //This function takes the argument of three vector and applies that to the matrix.
+        void setComponents(const Vector3 &vec1, const Vector3 &vec2, const Vector3 &vec3)
+        {
+            data[0][0] = vec1.x; data[0][1] = vec2.x; data[0][2] = vec3.x;
+            data[1][0] = vec1.y; data[1][1] = vec2.y; data[1][2] = vec3.y;
+            data[2][0] = vec1.z; data[2][1] = vec2.z; data[2][2] = vec3.z;
+        }
 
-            //Sets the matrix to be a skew symmetric matrix based on the given vector.
-            //The skew symmetric matrix is the same as the vector product.
-            //So if we have two vectors a x b = c, c is a skewed symmetric form of a.
-            //We apply this to our 3 by 3 matrix.
-            void setSkewSymmetric(const Vector3 &vec)
-            {
-                data[0][0] = data[1][1] = data[2][2] = 0;
-                data[0][1] = -vec.z;
-                data[0][2] = vec.y;
-                data[1][0] = vec.z;
-                data[1][2] = -vec.x;
-                data[2][0] = -vec.y;
-                data[2][1] = vec.x;
-            }
+        //This function returns the inverse of the matrix we are using for transformation.
+        Matrix3 inverse() const
+        {
+            Matrix3 result;
+            result.setInverse(*this);
+            return result;
+        }
 
-            //Overloads the multiplication operator, multiplying the 3 by 3 matrix with the core vector.
-            Vector3 operator*(const Vector3 &vec) const
-            {
-                return Vector3(
-                       vec.x * data[0][0] + vec.y * data[0][1] + vec.z * data[0][2],
-                       vec.x * data[1][0] + vec.y * data[1][1] + vec.z * data[1][2],
-                       vec.x * data[2][0] + vec.y * data[2][1] + vec.z * data[2][2]);
-            }
+        //This function inverts the matrix
+        void invert()
+        {
+            setInverse(*this);
+        }
 
-            //Multiplies a 3 by 3 matrix with another.
-            Matrix3 operator*(const Matrix3 &matrix) const
-            {
-                return Matrix3(data[0][0] * matrix.data[0][0] + data[0][1] * matrix.data[1][0] + data[0][2] * matrix.data[2][0],
-                               data[0][0] * matrix.data[0][1] + data[0][1] * matrix.data[1][1] + data[0][2] * matrix.data[2][1],
-                               data[0][0] * matrix.data[0][2] + data[0][1] * matrix.data[1][2] + data[0][2] * matrix.data[2][2],
+        //This function transposes the currently matrix.
+        void setTranspose(const Matrix3 &matrix)
+        {
+            data[0][0] = matrix.data[0][0]; data[0][1] = matrix.data[1][0]; data[0][2] = matrix.data[2][0];
+            data[1][0] = matrix.data[0][1]; data[1][1] = matrix.data[1][1]; data[1][2] = matrix.data[2][1];
+            data[2][0] = matrix.data[0][2]; data[2][1] = matrix.data[1][2]; data[2][2] = matrix.data[2][2];
+        }
 
-                               data[1][0] * matrix.data[0][0] + data[1][1] * matrix.data[1][0] + data[1][2] * matrix.data[2][0],
-                               data[1][0] * matrix.data[0][1] + data[1][1] * matrix.data[1][1] + data[1][2] * matrix.data[2][1],
-                               data[1][0] * matrix.data[0][2] + data[1][1] * matrix.data[1][2] + data[1][2] * matrix.data[2][2],
+        //This function returns a new matrix which is the transpose of the current matrix.
+        Matrix3 transpose() const
+        {
+            Matrix3 result;
+            result.setTranspose(*this);
+            return result;
+        }
 
-                               data[2][0] * matrix.data[0][0] + data[2][1] * matrix.data[1][0] + data[2][2] * matrix.data[2][0],
-                               data[2][0] * matrix.data[0][1] + data[2][1] * matrix.data[1][1] + data[2][2] * matrix.data[2][1],
-                               data[2][0] * matrix.data[0][2] + data[2][1] * matrix.data[1][2] + data[2][2] * matrix.data[2][2]
-                               );
-            }
+        //This function converts the quaternion into a rotational matrix.
+        void setOrientation(const Quaternion &quat)
+        {
+            data[0][0] = 1 - (2 * quat.j * quat.j + 2 * quat.k * quat.k);
+            data[0][1] = 2 * quat.i * quat.j + 2 * quat.k * quat.r;
+            data[0][2] = 2 * quat.i * quat.k - 2 * quat.j * quat.r;
 
-            void operator*=(const Matrix3 &matrix)
-            {
-                real t1, t2, t3;
-                t1 = data[0][0] * matrix.data[0][0] + data[0][1] * matrix.data[1][0] + data[0][2] * matrix.data[2][0];
-                t2 = data[0][0] * matrix.data[0][1] + data[0][1] * matrix.data[1][1] + data[0][2] * matrix.data[2][1];
-                t3 = data[0][0] * matrix.data[0][2] + data[0][1] * matrix.data[1][2] + data[0][2] * matrix.data[2][2];
-                data[0][0] = t1;
-                data[0][1] = t2;
-                data[0][2] = t3;
+            data[1][0] = 2 * quat.i * quat.j - 2 * quat.k * quat.r;
+            data[1][1] = 1 - (2 * quat.i * quat.i + 2 * quat.k * quat.k);
+            data[1][2] = 2 * quat.j * quat.k + 2 * quat.i * quat.r;
 
-                t1 = data[1][0] * matrix.data[0][0] + data[1][1] * matrix.data[1][0] + data[1][2] * matrix.data[2][0];
-                t2 = data[1][0] * matrix.data[0][1] + data[1][1] * matrix.data[1][1] + data[1][2] * matrix.data[2][1];
-                t3 = data[1][0] * matrix.data[0][2] + data[1][1] * matrix.data[1][2] + data[1][2] * matrix.data[2][2],
-                data[1][0] = t1;
-                data[1][1] = t2;
-                data[1][2] = t3;
+            data[2][0] = 2 * quat.i * quat.k + 2 * quat.j * quat.r;
+            data[2][1] = 2 * quat.j * quat.k - 2 * quat.i * quat.r;
+            data[2][2] = 1 - (2 * quat.i * quat.i + 2 * quat.j * quat.j);
+        }
 
-                t1 = data[2][0] * matrix.data[0][0] + data[2][1] * matrix.data[1][0] + data[2][2] * matrix.data[2][0];
-                t2 = data[2][0] * matrix.data[0][1] + data[2][1] * matrix.data[1][1] + data[2][2] * matrix.data[2][1];
-                t3 = data[2][0] * matrix.data[0][2] + data[2][1] * matrix.data[1][2] + data[2][2] * matrix.data[2][2];
-                data[2][0] = t1;
-                data[2][1] = t2;
-                data[2][2] = t3;
-            }
-
-            //This multiplies a given matrix by a scalar
-            void operator*=(const real &scalar)
-            {
-                data[0][0] *= scalar; data[0][1] *= scalar; data[0][2] *= scalar;
-                data[1][0] *= scalar; data[1][1] *= scalar; data[1][2] *= scalar;
-                data[2][0] *= scalar; data[2][1] *= scalar; data[2][2] *= scalar;
-            }
-
-            //Simply adds the matrix given to the current matrix
-            void operator+=(const Matrix3 &matrix)
-            {
-                data[0][0] += matrix.data[0][0]; data[0][1] += matrix.data[0][1]; data[0][2] += matrix.data[0][2];
-                data[1][0] += matrix.data[1][0]; data[1][1] += matrix.data[1][1]; data[1][2] += matrix.data[1][2];
-                data[2][0] += matrix.data[2][0]; data[2][1] += matrix.data[2][1]; data[2][2] += matrix.data[2][2];
-            }
-
-            //This functions takes any matrix and sets up the idenity but overwrites any other value.
-            Matrix3 setIdentity()
-            {
-                data[0][0] = 1; data[0][1] = 0; data[0][2] = 0;
-                data[1][0] = 0; data[1][1] = 1; data[1][2] = 0;
-                data[2][0] = 0; data[2][1] = 0; data[2][2] = 1;
-
-                return *this;
-            }
-
-            real getDeterminant()
-            {
-                return(data[0][0] * (data[1][1] * data[2][2] - data[1][2] * data[2][1]) -
-                data[0][1] * (data[1][0] * data[2][2] - data[1][2] * data[2][0]) +
-                data[0][2] * (data[1][0] * data[2][1] - data[1][1] * data[2][0]));
-            }
-
-            real getDeterminant(real eigen)
-            {
-                return((data[0][0] - eigen) * ((data[1][1] - eigen) * (data[2][2] - eigen) - data[1][2] * data[2][1]) -
-                data[0][1] * (data[1][0] * (data[2][2] - eigen) - data[1][2] * data[2][0]) +
-                data[0][2] * (data[1][0] * data[2][1] - (data[1][1] - eigen) * data[2][0]));
-            }
-
-
-            //This functions transforms a matrix by multiplying by a vector.
-            Vector3 transform(const Vector3 &vec) const
-            {
-                return (*this) * vec;
-            }
-
-            //This function returns a vector which is transformed by the current matrix.
-            Vector3 transformTranspose(const Vector3& vec)
-            {
-                return Vector3(vec.x * data[0][0] + vec.y * data[1][0] + vec.z * data[2][0],
-                               vec.x * data[0][1] + vec.y * data[1][1] + vec.z * data[2][1],
-                               vec.x * data[0][2] + vec.y * data[1][2] + vec.z * data[2][2]);
-            }
-
-            //This function simply returns a row(which is the column of the current matrix) in a vector
-            Vector3 getRowVector(int i)
-            {
-                return Vector3(data[i][0], data[i + 1][0], data[i + 2][0]);
-            }
-
-            //This function simply returns an axis(which is the column of the current matrix) in a vector
-            Vector3 getAxisVector(int i)
-            {
-                return Vector3(data[0][i], data[0][i + 1], data[0][i + 2]);
-            }
-
-            /**This function inverts the matrix*/
-            void setInverse(const Matrix3 &matrix)
-            {
-                real t1 = matrix.data[0][0] * matrix.data[1][1];
-                real t2 = matrix.data[0][0] * matrix.data[1][2];
-
-                real t3 = matrix.data[0][1] * matrix.data[1][0];
-                real t4 = matrix.data[0][2] * matrix.data[1][0];
-
-                real t5 = matrix.data[0][1] * matrix.data[2][0];
-                real t6 = matrix.data[0][2] * matrix.data[2][0];
-
-                //Now to calculate the determinant.
-                real det = (t1 * matrix.data[2][2] - t2 * matrix.data[2][1] - t3 * matrix.data[2][2] +
-                            t4 * matrix.data[2][1] + t5 * matrix.data[1][2] - t6 * matrix.data[1][1]);
-
-                //This is to make sure we do not divide
-                if(det == (real)0.0)
-                {
-                    return;
-                }
-
-                real invd = (real)1.0 / det;
-
-                data[0][0] = (matrix.data[1][1] * matrix.data[2][2] - matrix.data[1][2] * matrix.data[2][1]) * invd;
-                data[0][1] = -(matrix.data[0][1] * matrix.data[2][2] - matrix.data[0][2] * matrix.data[2][1]) * invd;
-                data[0][2] = (matrix.data[0][1] * matrix.data[1][2] - matrix.data[0][2] * matrix.data[1][1]) * invd;
-
-                data[1][0] = -(matrix.data[1][0] * matrix.data[2][2]- matrix.data[1][2] * matrix.data[2][0]) * invd;
-                data[1][1] = (matrix.data[0][0] * matrix.data[2][2] - t6) * invd;
-                data[1][2] = -(t2 - t4) * invd;
-
-                data[2][0] = (matrix.data[1][0] * matrix.data[2][1] - matrix.data[1][1] * matrix.data[2][0]) * invd;
-                data[2][1] = -(matrix.data[0][0] * matrix.data[2][1] - t5) * invd;
-                data[2][2] = (t1 - t3) * invd;
-
-            }
-
-            //This function takes the argument of three vector and applies that to the matrix.
-            void setComponents(const Vector3 &vec1, const Vector3 &vec2, const Vector3 &vec3)
-            {
-                data[0][0] = vec1.x; data[0][1] = vec2.x; data[0][2] = vec3.x;
-                data[1][0] = vec1.y; data[1][1] = vec2.y; data[1][2] = vec3.y;
-                data[2][0] = vec1.z; data[2][1] = vec2.z; data[2][2] = vec3.z;
-            }
-
-            //This function returns the inverse of the matrix we are using for transformation.
-            Matrix3 inverse() const
-            {
-                Matrix3 result;
-                result.setInverse(*this);
-                return result;
-            }
-
-            //This function inverts the matrix
-            void invert()
-            {
-                setInverse(*this);
-            }
-
-            //This function transposes the currently matrix.
-            void setTranspose(const Matrix3 &matrix)
-            {
-                data[0][0] = matrix.data[0][0]; data[0][1] = matrix.data[1][0]; data[0][2] = matrix.data[2][0];
-                data[1][0] = matrix.data[0][1]; data[1][1] = matrix.data[1][1]; data[1][2] = matrix.data[2][1];
-                data[2][0] = matrix.data[0][2]; data[2][1] = matrix.data[1][2]; data[2][2] = matrix.data[2][2];
-            }
-
-            //This function returns a new matrix which is the transpose of the current matrix.
-            Matrix3 transpose() const
-            {
-                Matrix3 result;
-                result.setTranspose(*this);
-                return result;
-            }
-
-            //This function converts the quaternion into a rotational matrix.
-            void setOrientation(const Quaternion &quat)
-            {
-                data[0][0] = 1 - (2 * quat.j * quat.j + 2 * quat.k * quat.k);
-                data[0][1] = 2 * quat.i * quat.j + 2 * quat.k * quat.r;
-                data[0][2] = 2 * quat.i * quat.k - 2 * quat.j * quat.r;
-
-                data[1][0] = 2 * quat.i * quat.j - 2 * quat.k * quat.r;
-                data[1][1] = 1 - (2 * quat.i * quat.i + 2 * quat.k * quat.k);
-                data[1][2] = 2 * quat.j * quat.k + 2 * quat.i * quat.r;
-
-                data[2][0] = 2 * quat.i * quat.k + 2 * quat.j * quat.r;
-                data[2][1] = 2 * quat.j * quat.k - 2 * quat.i * quat.r;
-                data[2][2] = 1 - (2 * quat.i * quat.i + 2 * quat.j * quat.j);
-            }
-
-            //This function interpolates a couple of matrices.
-            static Matrix3 linearInterpolate(const Matrix3 &mat1, const Matrix3 &mat2, real prop);
+        //This function interpolates a couple of matrices.
+        static Matrix3 linearInterpolate(const Matrix3 &mat1, const Matrix3 &mat2, real prop);
 
     };
 
