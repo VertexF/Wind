@@ -422,7 +422,7 @@ namespace wind
             }
 
             //Works out the scalar product of a vector and returns it.
-            real scalarProduct(const Vector3& vec)
+            real scalarProduct(const Vector3& vec) const
             {
                 return (x * vec.x + y * vec.y + z * vec.z);
             }
@@ -485,7 +485,7 @@ namespace wind
             }
 
             //This function returns the normal of a vector that this class is currently handling.
-            Vector3 UnitVector()
+            Vector3 UnitVector() const
             {
                 Vector3 Result = *this;
                 Result.normalise();
@@ -582,29 +582,17 @@ namespace wind
                 r = cosHalfAngle;
             }
 
-            //returns the real component of the quaternion
-            real getR() const
+            //Quaternion subscript operator, indexes through the elements, that's how it gets the correct values.
+            real operator[](const unsigned int& i) const
             {
-                return r;
+                return((&r)[i]);
             }
 
-            //returns the first complex number in the quaternion
-            real getI() const
+            real& operator[](const unsigned int& i)
             {
-                return i;
+                return((&r)[i]);
             }
 
-             //returns the second complex number in the quaternion
-            real getJ() const
-            {
-                return j;
-            }
-
-            //returns the third complex number in the quaternion
-            real getK() const
-            {
-                return k;
-            }
 
             //This function normalises the quaternion making it valid for orientation.
             void normalise()
