@@ -1249,256 +1249,251 @@ namespace wind
     class Matrix4x4
     {
         public:
-            real data[4][4];
+        real data[4][4];
 
-            //Constructor sets up the idenity.
-            Matrix4x4()
+        //Constructor sets up the idenity.
+        Matrix4x4()
+        {
+            data[0][1] = data[0][2] = data[0][3] = data[1][0] = data[1][2] = data[1][3] = data[2][0] = data[2][1] = data[2][3] = data[3][0] = data[3][1] = data[3][2] = 0;
+            data[0][0] = data[1][1] = data[2][2] = data[3][3] = 1;
+        }
+
+        //Sets a everything to a scalar
+        Matrix4x4(real scalar)
+        {
+            data[0][1] = data[0][2] = data[0][3] = data[1][0] = data[1][2] = data[1][3] = data[2][0] = data[2][1] = data[2][3] = data[3][0] = data[3][1] = data[3][2] = scalar;
+            data[0][0] = data[1][1] = data[2][2] = data[3][3] = scalar;
+        }
+
+        Matrix4x4(float mat[16])
+        {
+            data[0][0] = mat[0];
+            data[0][1] = mat[4];
+            data[0][2] = mat[8];
+
+            data[1][0] = mat[1];
+            data[1][1] = mat[5];
+            data[1][2] = mat[9];
+
+            data[2][0] = mat[2];
+            data[2][1] = mat[6];
+            data[2][2] = mat[10];
+
+            data[3][0] = mat[3];
+            data[3][1] = mat[7];
+            data[3][2] = mat[11];
+
+            data[0][3] = mat[12];
+            data[1][3] = mat[13];
+            data[2][3] = mat[14];
+            data[3][3] = mat[15];
+        }
+
+        //This functions takes any matrix and sets up the idenity but overwrites any other value.
+        Matrix4x4 setIdentity()
+        {
+            data[0][0] = 1; data[0][1] = 0; data[0][2] = 0; data[0][3] = 0;
+            data[1][0] = 0; data[1][1] = 1; data[1][2] = 0; data[1][3] = 0;
+            data[2][0] = 0; data[2][1] = 0; data[2][2] = 1; data[2][3] = 0;
+            data[3][0] = 0; data[3][1] = 0; data[3][2] = 0; data[3][3] = 1;
+
+            return *this;
+        }
+
+        Matrix4x4 setTranslation(real x, real y, real z)
+        {
+            data[0][0] = 1; data[0][1] = 0; data[0][2] = 0; data[0][3] = x;
+            data[1][0] = 0; data[1][1] = 1; data[1][2] = 0; data[1][3] = y;
+            data[2][0] = 0; data[2][1] = 0; data[2][2] = 1; data[2][3] = z;
+            data[3][0] = 0; data[3][1] = 0; data[3][2] = 0; data[3][3] = 1;
+
+            return *this;
+        }
+
+
+        Matrix4x4 initRotation(const Vector3 &forward, const Vector3 &up) const
+        {
+            Vector3 f = forward;
+            f.normalise();
+
+            Vector3 r = up;
+            r.normalise();
+            r = r % f;
+
+            Vector3 u = f % r;
+
+            return initRotation(f, u, r);
+        }
+
+        Matrix4x4 initRotation(const Vector3 &forward, const Vector3 &up, const Vector3 &right) const
+        {
+            Matrix4x4 result;
+
+            result.data[0][0] = right.x; result.data[0][1] = right.y; result.data[0][2] = right.z; result.data[0][3] = 0;
+            result.data[1][0] = up.x; result.data[1][1] = up.y; result.data[1][2] = up.z; result.data[1][3] = 0;
+            result.data[2][0] = forward.x; result.data[2][1] = forward.y; result.data[2][2] = forward.z; result.data[2][3] = 0;
+            result.data[3][0] = 0; result.data[3][1] = 0; result.data[3][2] = 0; result.data[3][3] = 1;
+
+            return result;
+        }
+
+        //This gets the current determinate of a 4 by 4.
+        //Note: If this is too slow find a better. Is it faster to built a triangle matrix first?
+        real getDeterminant() const
+        {
+            Matrix3 minor1(data[1][1], data[1][2], data[1][3],
+                            data[2][1], data[2][2], data[2][3],
+                            data[3][1], data[3][2], data[3][3]);
+
+            Matrix3 minor2(data[1][0], data[1][2], data[1][3],
+                            data[2][0], data[2][2], data[2][3],
+                            data[3][0], data[3][2], data[3][3]);
+
+            Matrix3 minor3(data[1][0], data[1][1], data[1][3],
+                            data[2][0], data[2][1], data[2][3],
+                            data[3][0], data[3][1], data[3][3]);
+
+            Matrix3 minor4(data[1][0], data[1][1], data[1][2],
+                            data[2][0], data[2][1], data[2][2],
+                            data[3][0], data[3][1], data[3][2]);
+
+            return ((data[0][0] * minor1.getDeterminant()) -
+                    (data[0][1] * minor2.getDeterminant()) +
+                    (data[0][2] * minor3.getDeterminant()) -
+                    (data[0][3] * minor4.getDeterminant()));
+        }
+
+        //Simple multiplication of a 4 by 4 matrix.
+        Matrix4x4 operator*(const Matrix4x4& matrix) const
+        {
+            Matrix4x4 result;
+            result.data[0][0] = (data[0][0] * matrix.data[0][0]) + (data[0][1] * matrix.data[1][0]) + (data[0][2] * matrix.data[2][0]) + (data[0][3] * matrix.data[3][0]);
+            result.data[1][0] = (data[1][0] * matrix.data[0][0]) + (data[1][1] * matrix.data[1][0]) + (data[1][2] * matrix.data[2][0]) + (data[1][3] * matrix.data[3][0]);
+            result.data[2][0] = (data[2][0] * matrix.data[0][0]) + (data[2][1] * matrix.data[1][0]) + (data[2][2] * matrix.data[2][0]) + (data[2][3] * matrix.data[3][0]);
+            result.data[3][0] = (data[3][0] * matrix.data[0][0]) + (data[3][1] * matrix.data[1][0]) + (data[3][2] * matrix.data[2][0]) + (data[3][3] * matrix.data[3][0]);
+
+            result.data[0][1] = (data[0][0] * matrix.data[0][1]) + (data[0][1] * matrix.data[1][1]) + (data[0][2] * matrix.data[2][1]) + (data[0][3] * matrix.data[3][1]);
+            result.data[1][1] = (data[1][0] * matrix.data[0][1]) + (data[1][1] * matrix.data[1][1]) + (data[1][2] * matrix.data[2][1]) + (data[1][3] * matrix.data[3][1]);
+            result.data[2][1] = (data[2][0] * matrix.data[0][1]) + (data[2][1] * matrix.data[1][1]) + (data[2][2] * matrix.data[2][1]) + (data[2][3] * matrix.data[3][1]);
+            result.data[3][1] = (data[3][0] * matrix.data[0][1]) + (data[3][1] * matrix.data[1][1]) + (data[3][2] * matrix.data[2][1]) + (data[3][3] * matrix.data[3][1]);
+
+            result.data[0][2] = (data[0][0] * matrix.data[0][2]) + (data[0][1] * matrix.data[1][2]) + (data[0][2] * matrix.data[2][2]) + (data[0][3] * matrix.data[3][2]);
+            result.data[1][2] = (data[1][0] * matrix.data[0][2]) + (data[1][1] * matrix.data[1][2]) + (data[1][2] * matrix.data[2][2]) + (data[1][3] * matrix.data[3][2]);
+            result.data[2][2] = (data[2][0] * matrix.data[0][2]) + (data[2][1] * matrix.data[1][2]) + (data[2][2] * matrix.data[2][2]) + (data[2][3] * matrix.data[3][2]);
+            result.data[3][2] = (data[3][0] * matrix.data[0][2]) + (data[3][1] * matrix.data[1][2]) + (data[3][2] * matrix.data[2][2]) + (data[3][3] * matrix.data[3][2]);
+
+            result.data[0][3] = (data[0][0] * matrix.data[0][3]) + (data[0][1] * matrix.data[1][3]) + (data[0][2] * matrix.data[2][3]) + (data[0][3] * matrix.data[3][3]);
+            result.data[1][3] = (data[1][0] * matrix.data[0][3]) + (data[1][1] * matrix.data[1][3]) + (data[1][2] * matrix.data[2][3]) + (data[1][3] * matrix.data[3][3]);
+            result.data[2][3] = (data[2][0] * matrix.data[0][3]) + (data[2][1] * matrix.data[1][3]) + (data[2][2] * matrix.data[2][3]) + (data[2][3] * matrix.data[3][3]);
+            result.data[3][3] = (data[3][0] * matrix.data[0][3]) + (data[3][1] * matrix.data[1][3]) + (data[3][2] * matrix.data[2][3]) + (data[3][3] * matrix.data[3][3]);
+
+            return result;
+        }
+
+        void getGLTransform(float GLarray[16]) const
+        {
+            GLarray[0] = static_cast<float>(data[0][0]);
+            GLarray[1] = static_cast<float>(data[1][0]);
+            GLarray[2] = static_cast<float>(data[2][0]);
+            GLarray[3] = static_cast<float>(data[3][0]);
+
+            GLarray[4] = static_cast<float>(data[0][1]);
+            GLarray[5] = static_cast<float>(data[1][1]);
+            GLarray[6] = static_cast<float>(data[2][1]);
+            GLarray[7] = static_cast<float>(data[3][1]);
+
+            GLarray[8] = static_cast<float>(data[0][2]);
+            GLarray[9] = static_cast<float>(data[1][2]);
+            GLarray[10] = static_cast<float>(data[2][2]);
+            GLarray[11] = static_cast<float>(data[3][2]);
+
+            GLarray[12] = static_cast<float>(data[0][3]);
+            GLarray[13] = static_cast<float>(data[1][3]);
+            GLarray[14] = static_cast<float>(data[2][3]);
+            GLarray[15] = static_cast<float>(data[3][3]);
+        }
+
+        Matrix4x4 perspectiveRH(real fovy, real aspect, real zNear, real zFar) const
+        {
+            if(!(std::abs(aspect - std::numeric_limits<real>::epsilon()) > 0.0))
             {
-                data[0][1] = data[0][2] = data[0][3] = data[1][0] = data[1][2] = data[1][3] = data[2][0] = data[2][1] = data[2][3] = data[3][0] = data[3][1] = data[3][2] = 0;
-                data[0][0] = data[1][1] = data[2][2] = data[3][3] = 1;
+                std::cerr << "Error aspect minus epsilon is bigger than 0" << std::endl;
+                std::cerr << (std::abs(aspect - std::numeric_limits<real>::epsilon())) << std::endl;
             }
 
-            //Sets a everything to a scalar
-            Matrix4x4(real scalar)
+            real const tanHalfFovy = tan(fovy / 2.0);
+
+            Matrix4x4 Result(0.0);
+            Result.data[0][0] = 1.0 / (aspect * tanHalfFovy);
+            Result.data[1][1] = 1.0 / (tanHalfFovy);
+            Result.data[3][2] = -1.0;
+
+            //Only works if the clip depth is not 0!
+            Result.data[2][2] = -(zFar + zNear) / (zFar - zNear);
+            Result.data[2][3] = -(2.0 * zFar * zNear) / (zFar - zNear);
+
+            return Result;
+        }
+
+        /**
+            This function is for handling 2D projection on. Needed for text projections and other GUIs
+            Note: Only works if clip depth is zero and it's in RH coordinates.
+        */
+        Matrix4x4 orthoRH(real left, real right, real bottom, real top, real zNear, real zFar) const
+        {
+            Matrix4x4 Result;
+            Result.data[0][0] = 2.0 / (right - left);
+            Result.data[1][1] = 2.0 / (top - bottom);
+            Result.data[0][3] = -(right + left) / (right - left);
+            Result.data[1][3] = -(top + bottom) / (top - bottom);
+
+            //Commented out if clip depth is zero solution.
+            if(zNear == 0 && zFar == 0)
             {
-                for(int i = 0; i < 4; i++)
-                {
-                    for(int j = 0; j < 4; j++)
-                    {
-                        data[i][j] = scalar;
-                    }
-                }
+                Result.data[2][2] = -1.0 / (zFar - zNear);
+                Result.data[3][2] = -zNear / (zFar - zNear);
+                Result.data[3][3] = 1;
+            }
+            else
+            {
+                //Only works if clip depth is not equal to zero.
+                Result.data[2][2] = -2.0 / (zFar - zNear);
+                Result.data[2][3] = -(zFar + zNear) / (zFar - zNear);
+                Result.data[3][3] = 1;
             }
 
-            Matrix4x4(float mat[16])
-            {
-                data[0][0] = mat[0];
-                data[0][1] = mat[4];
-                data[0][2] = mat[8];
+            return Result;
+        }
 
-                data[1][0] = mat[1];
-                data[1][1] = mat[5];
-                data[1][2] = mat[9];
+        Matrix4x4 lookAt(const Vector3 &eye, const Vector3 &centre, const Vector3 &up) const
+        {
+            Vector3 f(centre - eye);
+            f.normalise();
 
-                data[2][0] = mat[2];
-                data[2][1] = mat[6];
-                data[2][2] = mat[10];
+            Vector3 s(f % up);
+            s.normalise();
 
-                data[3][0] = mat[3];
-                data[3][1] = mat[7];
-                data[3][2] = mat[11];
+            Vector3 u(s % f);
 
-                data[0][3] = mat[12];
-                data[1][3] = mat[13];
-                data[2][3] = mat[14];
-                data[3][3] = mat[15];
-            }
+            Matrix4x4 Result(1.0);
+            Result.data[0][0] = s.x;
+            Result.data[1][0] = s.y;
+            Result.data[2][0] = s.z;
 
-            //This functions takes any matrix and sets up the idenity but overwrites any other value.
-            Matrix4x4 setIdentity()
-            {
-                data[0][0] = 1; data[0][1] = 0; data[0][2] = 0; data[0][3] = 0;
-                data[1][0] = 0; data[1][1] = 1; data[1][2] = 0; data[1][3] = 0;
-                data[2][0] = 0; data[2][1] = 0; data[2][2] = 1; data[2][3] = 0;
-                data[3][0] = 0; data[3][1] = 0; data[3][2] = 0; data[3][3] = 1;
+            Result.data[0][1] = u.x;
+            Result.data[1][1] = u.y;
+            Result.data[2][1] = u.z;
 
-                return *this;
-            }
+            Result.data[0][2] = -f.x;
+            Result.data[1][2] = -f.y;
+            Result.data[2][2] = -f.z;
 
-            Matrix4x4 setTranslation(real x, real y, real z)
-            {
-                data[0][0] = 1; data[0][1] = 0; data[0][2] = 0; data[0][3] = x;
-                data[1][0] = 0; data[1][1] = 1; data[1][2] = 0; data[1][3] = y;
-                data[2][0] = 0; data[2][1] = 0; data[2][2] = 1; data[2][3] = z;
-                data[3][0] = 0; data[3][1] = 0; data[3][2] = 0; data[3][3] = 1;
+            Result.data[3][0] = -s.scalarProduct(eye);
+            Result.data[3][1] = -u.scalarProduct(eye);
+            Result.data[3][2] = f.scalarProduct(eye);
 
-                return *this;
-            }
-
-
-            Matrix4x4 initRotation(const Vector3 &forward, const Vector3 &up) const
-            {
-                Vector3 f = forward;
-                f.normalise();
-
-                Vector3 r = up;
-                r.normalise();
-                r = r % f;
-
-                Vector3 u = f % r;
-
-                return initRotation(f, u, r);
-            }
-
-            Matrix4x4 initRotation(const Vector3 &forward, const Vector3 &up, const Vector3 &right) const
-            {
-                Matrix4x4 result;
-
-                result.data[0][0] = right.x; result.data[0][1] = right.y; result.data[0][2] = right.z; result.data[0][3] = 0;
-                result.data[1][0] = up.x; result.data[1][1] = up.y; result.data[1][2] = up.z; result.data[1][3] = 0;
-                result.data[2][0] = forward.x; result.data[2][1] = forward.y; result.data[2][2] = forward.z; result.data[2][3] = 0;
-                result.data[3][0] = 0; result.data[3][1] = 0; result.data[3][2] = 0; result.data[3][3] = 1;
-
-                return result;
-            }
-
-            //This gets the current determinate of a 4 by 4.
-            //Note: If this is too slow find a better. Is it faster to built a triangle matrix first?
-            real getDeterminant() const
-            {
-                Matrix3 minor1(data[1][1], data[1][2], data[1][3],
-                               data[2][1], data[2][2], data[2][3],
-                               data[3][1], data[3][2], data[3][3]);
-
-                Matrix3 minor2(data[1][0], data[1][2], data[1][3],
-                               data[2][0], data[2][2], data[2][3],
-                               data[3][0], data[3][2], data[3][3]);
-
-                Matrix3 minor3(data[1][0], data[1][1], data[1][3],
-                               data[2][0], data[2][1], data[2][3],
-                               data[3][0], data[3][1], data[3][3]);
-
-                Matrix3 minor4(data[1][0], data[1][1], data[1][2],
-                               data[2][0], data[2][1], data[2][2],
-                               data[3][0], data[3][1], data[3][2]);
-
-                return ((data[0][0] * minor1.getDeterminant()) -
-                        (data[0][1] * minor2.getDeterminant()) +
-                        (data[0][2] * minor3.getDeterminant()) -
-                        (data[0][3] * minor4.getDeterminant()));
-            }
-
-            //Simple multiplication of a 4 by 4 matrix.
-            Matrix4x4 operator*(const Matrix4x4& matrix)
-            {
-                Matrix4x4 result;
-                result.data[0][0] = (data[0][0] * matrix.data[0][0]) + (data[0][1] * matrix.data[1][0]) + (data[0][2] * matrix.data[2][0]) + (data[0][3] * matrix.data[3][0]);
-                result.data[1][0] = (data[1][0] * matrix.data[0][0]) + (data[1][1] * matrix.data[1][0]) + (data[1][2] * matrix.data[2][0]) + (data[1][3] * matrix.data[3][0]);
-                result.data[2][0] = (data[2][0] * matrix.data[0][0]) + (data[2][1] * matrix.data[1][0]) + (data[2][2] * matrix.data[2][0]) + (data[2][3] * matrix.data[3][0]);
-                result.data[3][0] = (data[3][0] * matrix.data[0][0]) + (data[3][1] * matrix.data[1][0]) + (data[3][2] * matrix.data[2][0]) + (data[3][3] * matrix.data[3][0]);
-
-                result.data[0][1] = (data[0][0] * matrix.data[0][1]) + (data[0][1] * matrix.data[1][1]) + (data[0][2] * matrix.data[2][1]) + (data[0][3] * matrix.data[3][1]);
-                result.data[1][1] = (data[1][0] * matrix.data[0][1]) + (data[1][1] * matrix.data[1][1]) + (data[1][2] * matrix.data[2][1]) + (data[1][3] * matrix.data[3][1]);
-                result.data[2][1] = (data[2][0] * matrix.data[0][1]) + (data[2][1] * matrix.data[1][1]) + (data[2][2] * matrix.data[2][1]) + (data[2][3] * matrix.data[3][1]);
-                result.data[3][1] = (data[3][0] * matrix.data[0][1]) + (data[3][1] * matrix.data[1][1]) + (data[3][2] * matrix.data[2][1]) + (data[3][3] * matrix.data[3][1]);
-
-                result.data[0][2] = (data[0][0] * matrix.data[0][2]) + (data[0][1] * matrix.data[1][2]) + (data[0][2] * matrix.data[2][2]) + (data[0][3] * matrix.data[3][2]);
-                result.data[1][2] = (data[1][0] * matrix.data[0][2]) + (data[1][1] * matrix.data[1][2]) + (data[1][2] * matrix.data[2][2]) + (data[1][3] * matrix.data[3][2]);
-                result.data[2][2] = (data[2][0] * matrix.data[0][2]) + (data[2][1] * matrix.data[1][2]) + (data[2][2] * matrix.data[2][2]) + (data[2][3] * matrix.data[3][2]);
-                result.data[3][2] = (data[3][0] * matrix.data[0][2]) + (data[3][1] * matrix.data[1][2]) + (data[3][2] * matrix.data[2][2]) + (data[3][3] * matrix.data[3][2]);
-
-                result.data[0][3] = (data[0][0] * matrix.data[0][3]) + (data[0][1] * matrix.data[1][3]) + (data[0][2] * matrix.data[2][3]) + (data[0][3] * matrix.data[3][3]);
-                result.data[1][3] = (data[1][0] * matrix.data[0][3]) + (data[1][1] * matrix.data[1][3]) + (data[1][2] * matrix.data[2][3]) + (data[1][3] * matrix.data[3][3]);
-                result.data[2][3] = (data[2][0] * matrix.data[0][3]) + (data[2][1] * matrix.data[1][3]) + (data[2][2] * matrix.data[2][3]) + (data[2][3] * matrix.data[3][3]);
-                result.data[3][3] = (data[3][0] * matrix.data[0][3]) + (data[3][1] * matrix.data[1][3]) + (data[3][2] * matrix.data[2][3]) + (data[3][3] * matrix.data[3][3]);
-
-                return result;
-            }
-
-            void getGLTransform(float GLarray[16]) const
-            {
-                GLarray[0] = static_cast<float>(data[0][0]);
-                GLarray[1] = static_cast<float>(data[1][0]);
-                GLarray[2] = static_cast<float>(data[2][0]);
-                GLarray[3] = static_cast<float>(data[3][0]);
-
-                GLarray[4] = static_cast<float>(data[0][1]);
-                GLarray[5] = static_cast<float>(data[1][1]);
-                GLarray[6] = static_cast<float>(data[2][1]);
-                GLarray[7] = static_cast<float>(data[3][1]);
-
-                GLarray[8] = static_cast<float>(data[0][2]);
-                GLarray[9] = static_cast<float>(data[1][2]);
-                GLarray[10] = static_cast<float>(data[2][2]);
-                GLarray[11] = static_cast<float>(data[3][2]);
-
-                GLarray[12] = static_cast<float>(data[0][3]);
-                GLarray[13] = static_cast<float>(data[1][3]);
-                GLarray[14] = static_cast<float>(data[2][3]);
-                GLarray[15] = static_cast<float>(data[3][3]);
-            }
-
-            Matrix4x4 perspectiveRH(real fovy, real aspect, real zNear, real zFar) const
-            {
-                if(!(std::abs(aspect - std::numeric_limits<real>::epsilon()) > 0.0))
-                {
-                    std::cerr << "Error aspect minus epsilon is bigger than 0" << std::endl;
-                    std::cerr << (std::abs(aspect - std::numeric_limits<real>::epsilon())) << std::endl;
-                }
-
-                real const tanHalfFovy = tan(fovy / 2.0);
-
-                wind::Matrix4x4 Result(0.0);
-                Result.data[0][0] = 1.0 / (aspect * tanHalfFovy);
-                Result.data[1][1] = 1.0 / (tanHalfFovy);
-                Result.data[3][2] = -1.0;
-
-                //Only works if the clip depth is not 0!
-                Result.data[2][2] = -(zFar + zNear) / (zFar - zNear);
-                Result.data[2][3] = -(2.0 * zFar * zNear) / (zFar - zNear);
-
-                return Result;
-            }
-
-            /**
-                This function is for handling 2D projection on. Needed for text projections and other GUIs
-                Note: Only works if clip depth is zero and it's in RH coordinates.
-            */
-            Matrix4x4 orthoRH(real left, real right, real bottom, real top, real zNear, real zFar)
-            {
-                Matrix4x4 Result;
-                Result.data[0][0] = 2.0 / (right - left);
-                Result.data[1][1] = 2.0 / (top - bottom);
-                Result.data[0][3] = -(right + left) / (right - left);
-                Result.data[1][3] = -(top + bottom) / (top - bottom);
-
-                //Commented out if clip depth is zero solution.
-                if(zNear == 0 && zFar == 0)
-                {
-                    Result.data[2][2] = -1.0 / (zFar - zNear);
-                    Result.data[3][2] = -zNear / (zFar - zNear);
-                    Result.data[3][3] = 1;
-                }
-                else
-                {
-                    //Only works if clip depth is not equal to zero.
-                    Result.data[2][2] = -2.0 / (zFar - zNear);
-                    Result.data[2][3] = -(zFar + zNear) / (zFar - zNear);
-                    Result.data[3][3] = 1;
-                }
-
-                return Result;
-            }
-
-            Matrix4x4 lookAt(Vector3 eye, Vector3 centre, Vector3 up) const
-            {
-                Vector3 f(centre - eye);
-                f.normalise();
-
-                Vector3 s(f % up);
-                s.normalise();
-
-                Vector3 u(s % f);
-
-                Matrix4x4 Result(1.0);
-                Result.data[0][0] = s.x;
-                Result.data[1][0] = s.y;
-                Result.data[2][0] = s.z;
-
-                Result.data[0][1] = u.x;
-                Result.data[1][1] = u.y;
-                Result.data[2][1] = u.z;
-
-                Result.data[0][2] = -f.x;
-                Result.data[1][2] = -f.y;
-                Result.data[2][2] = -f.z;
-
-                Result.data[3][0] = -s.scalarProduct(eye);
-                Result.data[3][1] = -u.scalarProduct(eye);
-                Result.data[3][2] = f.scalarProduct(eye);
-
-                return Result;
-            }
+            return Result;
+        }
     };
 };
 #endif // CORE_H
