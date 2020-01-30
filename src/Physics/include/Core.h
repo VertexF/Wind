@@ -1333,13 +1333,10 @@ namespace wind
             Matrix4x4 initRotation(const Vector3 &forward, const Vector3 &up, const Vector3 &right) const
             {
                 Matrix4x4 result;
-                Vector3 f = forward;
-                Vector3 r = right;
-                Vector3 u = up;
 
-                result.data[0][0] = r.x; result.data[0][1] = r.y; result.data[0][2] = r.z; result.data[0][3] = 0;
-                result.data[1][0] = u.x; result.data[1][1] = u.y; result.data[1][2] = u.z; result.data[1][3] = 0;
-                result.data[2][0] = f.x; result.data[2][1] = f.y; result.data[2][2] = f.z; result.data[2][3] = 0;
+                result.data[0][0] = right.x; result.data[0][1] = right.y; result.data[0][2] = right.z; result.data[0][3] = 0;
+                result.data[1][0] = up.x; result.data[1][1] = up.y; result.data[1][2] = up.z; result.data[1][3] = 0;
+                result.data[2][0] = forward.x; result.data[2][1] = forward.y; result.data[2][2] = forward.z; result.data[2][3] = 0;
                 result.data[3][0] = 0; result.data[3][1] = 0; result.data[3][2] = 0; result.data[3][3] = 1;
 
                 return result;
@@ -1347,7 +1344,7 @@ namespace wind
 
             //This gets the current determinate of a 4 by 4.
             //Note: If this is too slow find a better. Is it faster to built a triangle matrix first?
-            real getDeterminant()
+            real getDeterminant() const
             {
                 Matrix3 minor1(data[1][1], data[1][2], data[1][3],
                                data[2][1], data[2][2], data[2][3],
