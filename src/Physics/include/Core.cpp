@@ -87,56 +87,47 @@ Matrix3 Matrix3::linearInterpolate(const Matrix3 &mat1, const Matrix3 &mat2, rea
     return result;
 }
 
-Vector3 Vector3::rotate(real degree, Vector3 axis)
+Vector3 Vector3::rotate(real degree, const Vector3 &axis) const
 {
-	this->rotate(Quaternion().initRotation(axis, degree));
-
-	Quaternion rotation;
-	rotation = rotation.initRotation(axis, degree);
-	Quaternion conjugate = rotation.conjugate();
-
-	Quaternion w = rotation * (*this);
-	w *= conjugate;
-
-	return Vector3(w.i, w.j, w.k);
+    return this->rotate(Quaternion().initRotation(axis, degree));
 }
 
-Vector3 Vector3::rotate(Quaternion rotation)
+Vector3 Vector3::rotate(const Quaternion &rotation) const
 {
-	Quaternion conjugate = rotation.conjugate();
+    Quaternion conjugate = rotation.conjugate();
 
-	Quaternion w = rotation * (*this);
-	w *= conjugate;
+    Quaternion w = rotation * (*this);
+    w *= conjugate;
 
-	return Vector3(w.i, w.j, w.k);
+    return Vector3(w.i, w.j, w.k);
 }
 
 Vector3 Vector3::rotate(Quaternion rotation, Vector3 vec)
 {
     Quaternion conjugate = rotation.conjugate();
 
-	Quaternion w = rotation * vec;
-	w *= conjugate;
+    Quaternion w = rotation * vec;
+    w *= conjugate;
 
-	return Vector3(w.i, w.j, w.k);
+    return Vector3(w.i, w.j, w.k);
 }
 
 Vector3 Vector3::moveForward(Quaternion rotation)
 {
-	Quaternion conjugate = rotation.conjugate();
+    Quaternion conjugate = rotation.conjugate();
 
-	Quaternion w = rotation * (*this);
-	w *= conjugate;
+    Quaternion w = rotation * (*this);
+    w *= conjugate;
 
-	return Vector3(-w.i, 0.0, w.k);
+    return Vector3(-w.i, 0.0, w.k);
 }
 
 Vector3 Vector3::moveSidewards(Quaternion rotation)
 {
-	Quaternion conjugate = rotation.conjugate();
+    Quaternion conjugate = rotation.conjugate();
 
-	Quaternion w = rotation * (*this);
-	w *= conjugate;
+    Quaternion w = rotation * (*this);
+    w *= conjugate;
 
-	return Vector3(w.i, 0.0, -w.k);
+    return Vector3(w.i, 0.0, -w.k);
 }

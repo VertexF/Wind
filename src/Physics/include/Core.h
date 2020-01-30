@@ -40,21 +40,21 @@ namespace wind
     };
 
 
-	/**
-		Vector2 class has nothing to do with physics what so ever, it is purely here for the graphics.
-	*/
-	class Vector2
-	{
-		public:
-			real x;
-			real y;
+    /**
+        Vector2 class has nothing to do with physics what so ever, it is purely here for the graphics.
+    */
+    class Vector2
+    {
+        public:
+            real x;
+            real y;
 
             //Set all vectors to zero.
             Vector2() : x(0.0), y(0.0) {}
             //Sets up the vectors
             Vector2(const real x, const real y) : x(x), y(y){}
 
-			real operator[](const unsigned int& i) const
+            real operator[](const unsigned int& i) const
             {
                 if(i == 0)
                 {
@@ -72,13 +72,13 @@ namespace wind
                 return y;
             }
 
-			//This overloader operator checks to see if two vectors are the same.
+            //This overloader operator checks to see if two vectors are the same.
             bool operator==(const Vector2& rhs) const
             {
                 return(x == rhs.x && y == rhs.y);
             }
 
-			//Multiplies the vectors to give a scalar value.
+            //Multiplies the vectors to give a scalar value.
             void operator*=(const real& value)
             {
                 x *= value;
@@ -123,7 +123,7 @@ namespace wind
                 return Vector2(x - v.x, y - v.y);
             }
 
-			//Uses operator == to test to see if both vectors unequal, if this is true it returns true.
+            //Uses operator == to test to see if both vectors unequal, if this is true it returns true.
             bool operator!=(const Vector2& rhs) const
             {
                 return!(*this == rhs);
@@ -170,7 +170,7 @@ namespace wind
             }
 
             //Works out the scalar product of a vector and returns it.
-			//AKA dot product.
+            //AKA dot product.
             real scalarProduct(const Vector2& vec)
             {
                 return (x * vec.x + y * vec.y);
@@ -238,22 +238,22 @@ namespace wind
                 return Result;
             }
 
-			//This only works in 2D, it takes a degree value turns it into a radian and uses the rotation formula for to rotate the vector.
-			Vector2 rotate(real degree)
-			{
-				real radian = degree * R_PI / 180.0;
-				real rotcos = std::cos(radian);
-				real rotsin = std::sin(radian);
+            //This only works in 2D, it takes a degree value turns it into a radian and uses the rotation formula for to rotate the vector.
+            Vector2 rotate(real degree)
+            {
+                real radian = degree * R_PI / 180.0;
+                real rotcos = std::cos(radian);
+                real rotsin = std::sin(radian);
 
-				return Vector2((x * rotcos - y * rotsin), (x * rotsin + y * rotcos));
-			}
+                return Vector2((x * rotcos - y * rotsin), (x * rotsin + y * rotcos));
+            }
 
-	};
+    };
 
-	class Quaternion;
+    class Quaternion;
 
     class Vector3
-	{
+    {
 
         public:
             //The three vectors
@@ -322,20 +322,20 @@ namespace wind
                 return (x * vec.x + y * vec.y + z * vec.z);
             }
 
-			//Divides the vectors to give a scalar value.
+            //Divides the vectors to give a scalar value.
             void operator/=(const real& value)
             {
-				assert(value != 0);
+                assert(value != 0);
 
                 x /= value;
                 y /= value;
-				z /= value;
+                z /= value;
             }
 
             //Returns a copy of the give in the arguments
             Vector3 operator/(const real& value) const
             {
-				assert(value != 0);
+                assert(value != 0);
 
                 return Vector3(x / value, y / value, z / value);
             }
@@ -541,11 +541,11 @@ namespace wind
                 }
             }
 
-			Vector3 rotate(real degree, Vector3 axis);
-			Vector3 rotate(Quaternion rotation);
-			Vector3 rotate(Quaternion rotation, Vector3 vec);
-			Vector3 moveForward(Quaternion rotation);
-			Vector3 moveSidewards(Quaternion rotation);
+            Vector3 rotate(real degree, const Vector3 &axis) const;
+            Vector3 rotate(const Quaternion &rotation) const;
+            Vector3 rotate(Quaternion rotation, Vector3 vec);
+            Vector3 moveForward(Quaternion rotation);
+            Vector3 moveSidewards(Quaternion rotation);
 
         private:
             //This variable tells us if it's a vector or a point. 1 for vector which is default 0 for a point.
@@ -587,40 +587,40 @@ namespace wind
             {
             }
 
-			Quaternion(Vector3 axis, real angle)
-			{
-				real sinHalfAngle = std::sin((angle * R_PI/180) / 2);
-				real cosHalfAngle = std::cos((angle * R_PI/180) / 2);
+            Quaternion(Vector3 axis, real angle)
+            {
+                real sinHalfAngle = std::sin((angle * R_PI/180) / 2);
+                real cosHalfAngle = std::cos((angle * R_PI/180) / 2);
 
-				i = axis.x * sinHalfAngle;
-				j = axis.y * sinHalfAngle;
-				k = axis.z * sinHalfAngle;
-				r = cosHalfAngle;
-			}
+                i = axis.x * sinHalfAngle;
+                j = axis.y * sinHalfAngle;
+                k = axis.z * sinHalfAngle;
+                r = cosHalfAngle;
+            }
 
-			//returns the real component of the quaternion
-			real getR() const
-			{
-				return r;
-			}
+            //returns the real component of the quaternion
+            real getR() const
+            {
+                return r;
+            }
 
             //returns the first complex number in the quaternion
             real getI() const
-			{
-				return i;
-			}
+            {
+                return i;
+            }
 
              //returns the second complex number in the quaternion
             real getJ() const
-			{
-				return j;
-			}
+            {
+                return j;
+            }
 
             //returns the third complex number in the quaternion
             real getK() const
-			{
-				return k;
-			}
+            {
+                return k;
+            }
 
             //This function normalises the quaternion making it valid for orientation.
             void normalise()
@@ -634,12 +634,12 @@ namespace wind
                     return;
                 }
 
-				d = 1.0 / std::sqrt(d);
+                d = 1.0 / std::sqrt(d);
 
-				r *= d;
-				i *= d;
-				j *= d;
-				k *= d;
+                r *= d;
+                i *= d;
+                j *= d;
+                k *= d;
             }
 
             //This two multiplies quaternion together(This is the same process as any other)
@@ -652,10 +652,10 @@ namespace wind
                 j = q.r * multiplier.j + q.j * multiplier.r + q.k * multiplier.i - q.i * multiplier.k;
                 k = q.r * multiplier.k + q.k * multiplier.r + q.i * multiplier.j - q.j * multiplier.i;
 
-				return Quaternion(r, i, j, k);
+                return Quaternion(r, i, j, k);
             }
 
-			Quaternion operator*(const Quaternion &multiplier)
+            Quaternion operator*(const Quaternion &multiplier)
             {
                 Quaternion q = *this;
 
@@ -664,10 +664,10 @@ namespace wind
                 real j = q.r * multiplier.j + q.j * multiplier.r + q.k * multiplier.i - q.i * multiplier.k;
                 real k = q.r * multiplier.k + q.k * multiplier.r + q.i * multiplier.j - q.j * multiplier.i;
 
-				return Quaternion(r, i, j, k);
+                return Quaternion(r, i, j, k);
             }
 
-			Quaternion operator*(const Vector3 &multiplier)
+            Quaternion operator*(const Vector3 &multiplier) const
             {
                 Quaternion q = *this;
 
@@ -676,7 +676,7 @@ namespace wind
                 real j = q.r * multiplier.y + q.k * multiplier.x - q.i * multiplier.z;
                 real k = q.r * multiplier.z + q.i * multiplier.y - q.j * multiplier.x;
 
-				return Quaternion(r, i, j, k);
+                return Quaternion(r, i, j, k);
             }
 
             void rotateByVector(const Vector3 &vec)
@@ -697,69 +697,69 @@ namespace wind
                 k += q.k * 0.5;
             }
 
-			Quaternion conjugate()
-			{
-				Quaternion q(r, -i, -j, -k);
-				return q;
-			}
+            Quaternion conjugate() const
+            {
+                Quaternion q(r, -i, -j, -k);
+                return q;
+            }
 
-			/*These fucntions are the camera rotation*/
-			Vector3 getForward() const
-			{
-				//return Vector3(2.0 * (i * k - r * j), 2.0 * (j * k + r * i), 1.0 - 2.0 * (i * i + j * j));
-				return Vector3(0.0, 0.0, 1.0).rotate(*this);
-			}
+            /*These fucntions are the camera rotation*/
+            Vector3 getForward() const
+            {
+                //return Vector3(2.0 * (i * k - r * j), 2.0 * (j * k + r * i), 1.0 - 2.0 * (i * i + j * j));
+                return Vector3(0.0, 0.0, 1.0).rotate(*this);
+            }
 
-			Vector3 getBack()
-			{
-				//return Vector3(-2.0 * (i * k - r * j), -2.0 * (j * k + r * i), -(1.0 - 2.0 * (i * i + j * j)));
-				return Vector3(0.0, 0.0, -1.0).rotate(*this);
-			}
+            Vector3 getBack()
+            {
+                //return Vector3(-2.0 * (i * k - r * j), -2.0 * (j * k + r * i), -(1.0 - 2.0 * (i * i + j * j)));
+                return Vector3(0.0, 0.0, -1.0).rotate(*this);
+            }
 
-			Vector3 getUp() const
-			{
-				//return Vector3(2.0 * (i * j + r * k), 1.0 - 2.0 * (i * i + k * k), 2.0 * (j * k - r * i));
-				Vector3 result = Vector3(0.0, 1.0, 0.0).rotate(*this);
-				//result.normalise();
-				return result;
-			}
+            Vector3 getUp() const
+            {
+                //return Vector3(2.0 * (i * j + r * k), 1.0 - 2.0 * (i * i + k * k), 2.0 * (j * k - r * i));
+                Vector3 result = Vector3(0.0, 1.0, 0.0).rotate(*this);
+                //result.normalise();
+                return result;
+            }
 
-			Vector3 getDown()
-			{
-				return Vector3(-2.0 * (i * j + r * k), -(1.0 - 2.0 * (i * i + k * k)), -2.0 * (j * k - r * i));
-				//return Vector3(0.0, -1.0, 0.0).rotate(*this);
-			}
+            Vector3 getDown()
+            {
+                return Vector3(-2.0 * (i * j + r * k), -(1.0 - 2.0 * (i * i + k * k)), -2.0 * (j * k - r * i));
+                //return Vector3(0.0, -1.0, 0.0).rotate(*this);
+            }
 
-			Vector3 getRight() const
-			{
-				Vector3 result = Vector3(1.0 - 2.0 * (j * j + k * k), 2.0 * (i * j - r * k), 2.0 * (i * k + r * j));
-				//result.normalise();
-				return result;
-				//return Vector3(1.0, 0.0, 0.0).rotate(*this);
-			}
+            Vector3 getRight() const
+            {
+                Vector3 result = Vector3(1.0 - 2.0 * (j * j + k * k), 2.0 * (i * j - r * k), 2.0 * (i * k + r * j));
+                //result.normalise();
+                return result;
+                //return Vector3(1.0, 0.0, 0.0).rotate(*this);
+            }
 
-			Vector3 getLeft()
-			{
-				Vector3 result = Vector3(-(1.0 - 2.0 * (j * j + k * k)), -2.0 * (i * j - r * k), -2.0 * (i * k + r * j));
-				//result.normalise();
-				return result;
-				//return Vector3(-1.0, 0.0, 0.0).rotate(*this);
-			}
+            Vector3 getLeft()
+            {
+                Vector3 result = Vector3(-(1.0 - 2.0 * (j * j + k * k)), -2.0 * (i * j - r * k), -2.0 * (i * k + r * j));
+                //result.normalise();
+                return result;
+                //return Vector3(-1.0, 0.0, 0.0).rotate(*this);
+            }
 
-			Quaternion initRotation(Vector3 axis, real angle)
-			{
-				real sinHalfAngle = std::sin((angle / 2) * R_PI/180);
-				real cosHalfAngle = std::cos((angle / 2) * R_PI/180);
+            Quaternion initRotation(Vector3 axis, real angle)
+            {
+                real sinHalfAngle = std::sin((angle / 2) * R_PI/180);
+                real cosHalfAngle = std::cos((angle / 2) * R_PI/180);
 
-				i = axis.x * sinHalfAngle;
-				j = axis.y * sinHalfAngle;
-				k = axis.z * sinHalfAngle;
-				r = cosHalfAngle;
+                i = axis.x * sinHalfAngle;
+                j = axis.y * sinHalfAngle;
+                k = axis.z * sinHalfAngle;
+                r = cosHalfAngle;
 
-				return Quaternion(r, i, j, k);
-			}
+                return Quaternion(r, i, j, k);
+            }
 
-			//Matrix4x4 toRotation();
+            //Matrix4x4 toRotation();
     };
 
     /**
@@ -903,29 +903,29 @@ namespace wind
                 data[2][0] += matrix.data[2][0]; data[2][1] += matrix.data[2][1]; data[2][2] += matrix.data[2][2];
             }
 
-			//This functions takes any matrix and sets up the idenity but overwrites any other value.
-			Matrix3 setIdentity()
-			{
+            //This functions takes any matrix and sets up the idenity but overwrites any other value.
+            Matrix3 setIdentity()
+            {
                 data[0][0] = 1; data[0][1] = 0; data[0][2] = 0;
                 data[1][0] = 0; data[1][1] = 1; data[1][2] = 0;
                 data[2][0] = 0; data[2][1] = 0; data[2][2] = 1;
 
-				return *this;
-			}
+                return *this;
+            }
 
-			real getDeterminant()
-			{
+            real getDeterminant()
+            {
                 return(data[0][0] * (data[1][1] * data[2][2] - data[1][2] * data[2][1]) -
                 data[0][1] * (data[1][0] * data[2][2] - data[1][2] * data[2][0]) +
                 data[0][2] * (data[1][0] * data[2][1] - data[1][1] * data[2][0]));
-			}
+            }
 
             real getDeterminant(real eigen)
-			{
+            {
                 return((data[0][0] - eigen) * ((data[1][1] - eigen) * (data[2][2] - eigen) - data[1][2] * data[2][1]) -
                 data[0][1] * (data[1][0] * (data[2][2] - eigen) - data[1][2] * data[2][0]) +
                 data[0][2] * (data[1][0] * data[2][1] - (data[1][1] - eigen) * data[2][0]));
-			}
+            }
 
 
             //This functions transforms a matrix by multiplying by a vector.
@@ -1281,23 +1281,23 @@ namespace wind
             }
     };
 
-	/**
-		This is a limited class that handles 4 by 4 matrices.
-	*/
-	class Matrix4x4
-	{
-		public:
-			real data[4][4];
+    /**
+        This is a limited class that handles 4 by 4 matrices.
+    */
+    class Matrix4x4
+    {
+        public:
+            real data[4][4];
 
-			//Constructor sets up the idenity.
-			Matrix4x4()
+            //Constructor sets up the idenity.
+            Matrix4x4()
             {
                 data[0][1] = data[0][2] = data[0][3] = data[1][0] = data[1][2] = data[1][3] = data[2][0] = data[2][1] = data[2][3] = data[3][0] = data[3][1] = data[3][2] = 0;
                 data[0][0] = data[1][1] = data[2][2] = data[3][3] = 1;
             }
 
-			//Sets a everything to a scalar
-			Matrix4x4(real scalar)
+            //Sets a everything to a scalar
+            Matrix4x4(real scalar)
             {
                 for(int i = 0; i < 4; i++)
                 {
@@ -1308,85 +1308,85 @@ namespace wind
                 }
             }
 
-			Matrix4x4(float mat[16])
+            Matrix4x4(float mat[16])
             {
                 data[0][0] = mat[0];
-				data[0][1] = mat[4];
-				data[0][2] = mat[8];
+                data[0][1] = mat[4];
+                data[0][2] = mat[8];
 
-				data[1][0] = mat[1];
-				data[1][1] = mat[5];
-				data[1][2] = mat[9];
+                data[1][0] = mat[1];
+                data[1][1] = mat[5];
+                data[1][2] = mat[9];
 
-				data[2][0] = mat[2];
-				data[2][1] = mat[6];
-				data[2][2] = mat[10];
+                data[2][0] = mat[2];
+                data[2][1] = mat[6];
+                data[2][2] = mat[10];
 
-				data[3][0] = mat[3];
-				data[3][1] = mat[7];
-				data[3][2] = mat[11];
+                data[3][0] = mat[3];
+                data[3][1] = mat[7];
+                data[3][2] = mat[11];
 
-				data[0][3] = mat[12];
-				data[1][3] = mat[13];
-				data[2][3] = mat[14];
-				data[3][3] = mat[15];
+                data[0][3] = mat[12];
+                data[1][3] = mat[13];
+                data[2][3] = mat[14];
+                data[3][3] = mat[15];
             }
 
-			//This functions takes any matrix and sets up the idenity but overwrites any other value.
-			Matrix4x4 setIdentity()
-			{
-				data[0][0] = 1; data[0][1] = 0; data[0][2] = 0; data[0][3] = 0;
-				data[1][0] = 0; data[1][1] = 1; data[1][2] = 0; data[1][3] = 0;
-				data[2][0] = 0; data[2][1] = 0; data[2][2] = 1; data[2][3] = 0;
-				data[3][0] = 0; data[3][1] = 0; data[3][2] = 0; data[3][3] = 1;
+            //This functions takes any matrix and sets up the idenity but overwrites any other value.
+            Matrix4x4 setIdentity()
+            {
+                data[0][0] = 1; data[0][1] = 0; data[0][2] = 0; data[0][3] = 0;
+                data[1][0] = 0; data[1][1] = 1; data[1][2] = 0; data[1][3] = 0;
+                data[2][0] = 0; data[2][1] = 0; data[2][2] = 1; data[2][3] = 0;
+                data[3][0] = 0; data[3][1] = 0; data[3][2] = 0; data[3][3] = 1;
 
-				return *this;
-			}
+                return *this;
+            }
 
-			Matrix4x4 setTranslation(const real& x, const real& y, const real& z)
-			{
-				data[0][0] = 1; data[0][1] = 0; data[0][2] = 0; data[0][3] = x;
-				data[1][0] = 0; data[1][1] = 1; data[1][2] = 0; data[1][3] = y;
-				data[2][0] = 0; data[2][1] = 0; data[2][2] = 1; data[2][3] = z;
-				data[3][0] = 0; data[3][1] = 0; data[3][2] = 0; data[3][3] = 1;
+            Matrix4x4 setTranslation(const real& x, const real& y, const real& z)
+            {
+                data[0][0] = 1; data[0][1] = 0; data[0][2] = 0; data[0][3] = x;
+                data[1][0] = 0; data[1][1] = 1; data[1][2] = 0; data[1][3] = y;
+                data[2][0] = 0; data[2][1] = 0; data[2][2] = 1; data[2][3] = z;
+                data[3][0] = 0; data[3][1] = 0; data[3][2] = 0; data[3][3] = 1;
 
-				return *this;
-			}
+                return *this;
+            }
 
 
-			Matrix4x4 initRotation(Vector3 forward, Vector3 up)
-			{
-				Vector3 f = forward;
-				f.normalise();
+            Matrix4x4 initRotation(Vector3 forward, Vector3 up)
+            {
+                Vector3 f = forward;
+                f.normalise();
 
-				Vector3 r = up;
-				r.normalise();
-				r = r % f;
+                Vector3 r = up;
+                r.normalise();
+                r = r % f;
 
-				Vector3 u = f % r;
+                Vector3 u = f % r;
 
-				return initRotation(f, u, r);
-			}
+                return initRotation(f, u, r);
+            }
 
-			Matrix4x4 initRotation(Vector3 forward, Vector3 up, Vector3 right)
-			{
-				Matrix4x4 result;
-				Vector3 f = forward;
-				Vector3 r = right;
-				Vector3 u = up;
+            Matrix4x4 initRotation(Vector3 forward, Vector3 up, Vector3 right)
+            {
+                Matrix4x4 result;
+                Vector3 f = forward;
+                Vector3 r = right;
+                Vector3 u = up;
 
-				result.data[0][0] = r.x; result.data[0][1] = r.y; result.data[0][2] = r.z; result.data[0][3] = 0;
-				result.data[1][0] = u.x; result.data[1][1] = u.y; result.data[1][2] = u.z; result.data[1][3] = 0;
-				result.data[2][0] = f.x; result.data[2][1] = f.y; result.data[2][2] = f.z; result.data[2][3] = 0;
-				result.data[3][0] = 0; result.data[3][1] = 0; result.data[3][2] = 0; result.data[3][3] = 1;
+                result.data[0][0] = r.x; result.data[0][1] = r.y; result.data[0][2] = r.z; result.data[0][3] = 0;
+                result.data[1][0] = u.x; result.data[1][1] = u.y; result.data[1][2] = u.z; result.data[1][3] = 0;
+                result.data[2][0] = f.x; result.data[2][1] = f.y; result.data[2][2] = f.z; result.data[2][3] = 0;
+                result.data[3][0] = 0; result.data[3][1] = 0; result.data[3][2] = 0; result.data[3][3] = 1;
 
-				return result;
-			}
+                return result;
+            }
 
-			//This gets the current determinate of a 4 by 4.
-			//Note: If this is too slow find a better. Is it faster to built a triangle matrix first?
-			real getDeterminant()
-			{
+            //This gets the current determinate of a 4 by 4.
+            //Note: If this is too slow find a better. Is it faster to built a triangle matrix first?
+            real getDeterminant()
+            {
                 Matrix3 minor1(data[1][1], data[1][2], data[1][3],
                                data[2][1], data[2][2], data[2][3],
                                data[3][1], data[3][2], data[3][3]);
@@ -1407,139 +1407,139 @@ namespace wind
                         (data[0][1] * minor2.getDeterminant()) +
                         (data[0][2] * minor3.getDeterminant()) -
                         (data[0][3] * minor4.getDeterminant()));
-			}
+            }
 
-			//Simple multiplication of a 4 by 4 matrix.
-			Matrix4x4 operator*(const Matrix4x4& matrix)
-			{
-				Matrix4x4 result;
+            //Simple multiplication of a 4 by 4 matrix.
+            Matrix4x4 operator*(const Matrix4x4& matrix)
+            {
+                Matrix4x4 result;
                 result.data[0][0] = (data[0][0] * matrix.data[0][0]) + (data[0][1] * matrix.data[1][0]) + (data[0][2] * matrix.data[2][0]) + (data[0][3] * matrix.data[3][0]);
                 result.data[1][0] = (data[1][0] * matrix.data[0][0]) + (data[1][1] * matrix.data[1][0]) + (data[1][2] * matrix.data[2][0]) + (data[1][3] * matrix.data[3][0]);
                 result.data[2][0] = (data[2][0] * matrix.data[0][0]) + (data[2][1] * matrix.data[1][0]) + (data[2][2] * matrix.data[2][0]) + (data[2][3] * matrix.data[3][0]);
-				result.data[3][0] = (data[3][0] * matrix.data[0][0]) + (data[3][1] * matrix.data[1][0]) + (data[3][2] * matrix.data[2][0]) + (data[3][3] * matrix.data[3][0]);
+                result.data[3][0] = (data[3][0] * matrix.data[0][0]) + (data[3][1] * matrix.data[1][0]) + (data[3][2] * matrix.data[2][0]) + (data[3][3] * matrix.data[3][0]);
 
                 result.data[0][1] = (data[0][0] * matrix.data[0][1]) + (data[0][1] * matrix.data[1][1]) + (data[0][2] * matrix.data[2][1]) + (data[0][3] * matrix.data[3][1]);
                 result.data[1][1] = (data[1][0] * matrix.data[0][1]) + (data[1][1] * matrix.data[1][1]) + (data[1][2] * matrix.data[2][1]) + (data[1][3] * matrix.data[3][1]);
                 result.data[2][1] = (data[2][0] * matrix.data[0][1]) + (data[2][1] * matrix.data[1][1]) + (data[2][2] * matrix.data[2][1]) + (data[2][3] * matrix.data[3][1]);
-				result.data[3][1] = (data[3][0] * matrix.data[0][1]) + (data[3][1] * matrix.data[1][1]) + (data[3][2] * matrix.data[2][1]) + (data[3][3] * matrix.data[3][1]);
+                result.data[3][1] = (data[3][0] * matrix.data[0][1]) + (data[3][1] * matrix.data[1][1]) + (data[3][2] * matrix.data[2][1]) + (data[3][3] * matrix.data[3][1]);
 
                 result.data[0][2] = (data[0][0] * matrix.data[0][2]) + (data[0][1] * matrix.data[1][2]) + (data[0][2] * matrix.data[2][2]) + (data[0][3] * matrix.data[3][2]);
                 result.data[1][2] = (data[1][0] * matrix.data[0][2]) + (data[1][1] * matrix.data[1][2]) + (data[1][2] * matrix.data[2][2]) + (data[1][3] * matrix.data[3][2]);
                 result.data[2][2] = (data[2][0] * matrix.data[0][2]) + (data[2][1] * matrix.data[1][2]) + (data[2][2] * matrix.data[2][2]) + (data[2][3] * matrix.data[3][2]);
-				result.data[3][2] = (data[3][0] * matrix.data[0][2]) + (data[3][1] * matrix.data[1][2]) + (data[3][2] * matrix.data[2][2]) + (data[3][3] * matrix.data[3][2]);
+                result.data[3][2] = (data[3][0] * matrix.data[0][2]) + (data[3][1] * matrix.data[1][2]) + (data[3][2] * matrix.data[2][2]) + (data[3][3] * matrix.data[3][2]);
 
                 result.data[0][3] = (data[0][0] * matrix.data[0][3]) + (data[0][1] * matrix.data[1][3]) + (data[0][2] * matrix.data[2][3]) + (data[0][3] * matrix.data[3][3]);
                 result.data[1][3] = (data[1][0] * matrix.data[0][3]) + (data[1][1] * matrix.data[1][3]) + (data[1][2] * matrix.data[2][3]) + (data[1][3] * matrix.data[3][3]);
                 result.data[2][3] = (data[2][0] * matrix.data[0][3]) + (data[2][1] * matrix.data[1][3]) + (data[2][2] * matrix.data[2][3]) + (data[2][3] * matrix.data[3][3]);
-				result.data[3][3] = (data[3][0] * matrix.data[0][3]) + (data[3][1] * matrix.data[1][3]) + (data[3][2] * matrix.data[2][3]) + (data[3][3] * matrix.data[3][3]);
+                result.data[3][3] = (data[3][0] * matrix.data[0][3]) + (data[3][1] * matrix.data[1][3]) + (data[3][2] * matrix.data[2][3]) + (data[3][3] * matrix.data[3][3]);
 
-				return result;
-			}
+                return result;
+            }
 
-			void getGLTransform(float GLarray[16]) const
-			{
-				GLarray[0] = static_cast<float>(data[0][0]);
-				GLarray[1] = static_cast<float>(data[1][0]);
-				GLarray[2] = static_cast<float>(data[2][0]);
-				GLarray[3] = static_cast<float>(data[3][0]);
+            void getGLTransform(float GLarray[16]) const
+            {
+                GLarray[0] = static_cast<float>(data[0][0]);
+                GLarray[1] = static_cast<float>(data[1][0]);
+                GLarray[2] = static_cast<float>(data[2][0]);
+                GLarray[3] = static_cast<float>(data[3][0]);
 
-				GLarray[4] = static_cast<float>(data[0][1]);
-				GLarray[5] = static_cast<float>(data[1][1]);
-				GLarray[6] = static_cast<float>(data[2][1]);
-				GLarray[7] = static_cast<float>(data[3][1]);
+                GLarray[4] = static_cast<float>(data[0][1]);
+                GLarray[5] = static_cast<float>(data[1][1]);
+                GLarray[6] = static_cast<float>(data[2][1]);
+                GLarray[7] = static_cast<float>(data[3][1]);
 
-				GLarray[8] = static_cast<float>(data[0][2]);
-				GLarray[9] = static_cast<float>(data[1][2]);
-				GLarray[10] = static_cast<float>(data[2][2]);
-				GLarray[11] = static_cast<float>(data[3][2]);
+                GLarray[8] = static_cast<float>(data[0][2]);
+                GLarray[9] = static_cast<float>(data[1][2]);
+                GLarray[10] = static_cast<float>(data[2][2]);
+                GLarray[11] = static_cast<float>(data[3][2]);
 
-				GLarray[12] = static_cast<float>(data[0][3]);
-				GLarray[13] = static_cast<float>(data[1][3]);
-				GLarray[14] = static_cast<float>(data[2][3]);
-				GLarray[15] = static_cast<float>(data[3][3]);
-			}
+                GLarray[12] = static_cast<float>(data[0][3]);
+                GLarray[13] = static_cast<float>(data[1][3]);
+                GLarray[14] = static_cast<float>(data[2][3]);
+                GLarray[15] = static_cast<float>(data[3][3]);
+            }
 
-			Matrix4x4 perspectiveRH(real fovy, real aspect, real zNear, real zFar) const
-			{
-				if(!(std::abs(aspect - std::numeric_limits<real>::epsilon()) > 0.0))
+            Matrix4x4 perspectiveRH(real fovy, real aspect, real zNear, real zFar) const
+            {
+                if(!(std::abs(aspect - std::numeric_limits<real>::epsilon()) > 0.0))
                 {
                     std::cerr << "Error aspect minus epsilon is bigger than 0" << std::endl;
                     std::cerr << (std::abs(aspect - std::numeric_limits<real>::epsilon())) << std::endl;
                 }
 
-				real const tanHalfFovy = tan(fovy / 2.0);
+                real const tanHalfFovy = tan(fovy / 2.0);
 
-				wind::Matrix4x4 Result(0.0);
-				Result.data[0][0] = 1.0 / (aspect * tanHalfFovy);
-				Result.data[1][1] = 1.0 / (tanHalfFovy);
-				Result.data[3][2] = -1.0;
+                wind::Matrix4x4 Result(0.0);
+                Result.data[0][0] = 1.0 / (aspect * tanHalfFovy);
+                Result.data[1][1] = 1.0 / (tanHalfFovy);
+                Result.data[3][2] = -1.0;
 
-				//Only works if the clip depth is not 0!
-				Result.data[2][2] = -(zFar + zNear) / (zFar - zNear);
-				Result.data[2][3] = -(2.0 * zFar * zNear) / (zFar - zNear);
+                //Only works if the clip depth is not 0!
+                Result.data[2][2] = -(zFar + zNear) / (zFar - zNear);
+                Result.data[2][3] = -(2.0 * zFar * zNear) / (zFar - zNear);
 
-				return Result;
-			}
+                return Result;
+            }
 
-			/**
-				This function is for handling 2D projection on. Needed for text projections and other GUIs
-				Note: Only works if clip depth is zero and it's in RH coordinates.
-			*/
-			Matrix4x4 orthoRH(real left, real right, real bottom, real top, real zNear, real zFar)
-			{
-				Matrix4x4 Result;
-				Result.data[0][0] = 2.0 / (right - left);
-				Result.data[1][1] = 2.0 / (top - bottom);
-				Result.data[0][3] = -(right + left) / (right - left);
-				Result.data[1][3] = -(top + bottom) / (top - bottom);
+            /**
+                This function is for handling 2D projection on. Needed for text projections and other GUIs
+                Note: Only works if clip depth is zero and it's in RH coordinates.
+            */
+            Matrix4x4 orthoRH(real left, real right, real bottom, real top, real zNear, real zFar)
+            {
+                Matrix4x4 Result;
+                Result.data[0][0] = 2.0 / (right - left);
+                Result.data[1][1] = 2.0 / (top - bottom);
+                Result.data[0][3] = -(right + left) / (right - left);
+                Result.data[1][3] = -(top + bottom) / (top - bottom);
 
-				//Commented out if clip depth is zero solution.
-				if(zNear == 0 && zFar == 0)
-				{
-					Result.data[2][2] = -1.0 / (zFar - zNear);
-					Result.data[3][2] = -zNear / (zFar - zNear);
-					Result.data[3][3] = 1;
-				}
-				else
-				{
-					//Only works if clip depth is not equal to zero.
-					Result.data[2][2] = -2.0 / (zFar - zNear);
-					Result.data[2][3] = -(zFar + zNear) / (zFar - zNear);
-					Result.data[3][3] = 1;
-				}
+                //Commented out if clip depth is zero solution.
+                if(zNear == 0 && zFar == 0)
+                {
+                    Result.data[2][2] = -1.0 / (zFar - zNear);
+                    Result.data[3][2] = -zNear / (zFar - zNear);
+                    Result.data[3][3] = 1;
+                }
+                else
+                {
+                    //Only works if clip depth is not equal to zero.
+                    Result.data[2][2] = -2.0 / (zFar - zNear);
+                    Result.data[2][3] = -(zFar + zNear) / (zFar - zNear);
+                    Result.data[3][3] = 1;
+                }
 
-				return Result;
-			}
+                return Result;
+            }
 
-			Matrix4x4 lookAt(Vector3 eye, Vector3 centre, Vector3 up) const
-			{
-				Vector3 f(centre - eye);
-				f.normalise();
+            Matrix4x4 lookAt(Vector3 eye, Vector3 centre, Vector3 up) const
+            {
+                Vector3 f(centre - eye);
+                f.normalise();
 
-				Vector3 s(f % up);
-				s.normalise();
+                Vector3 s(f % up);
+                s.normalise();
 
-				Vector3 u(s % f);
+                Vector3 u(s % f);
 
-				Matrix4x4 Result(1.0);
-				Result.data[0][0] = s.x;
-				Result.data[1][0] = s.y;
-				Result.data[2][0] = s.z;
+                Matrix4x4 Result(1.0);
+                Result.data[0][0] = s.x;
+                Result.data[1][0] = s.y;
+                Result.data[2][0] = s.z;
 
-				Result.data[0][1] = u.x;
-				Result.data[1][1] = u.y;
-				Result.data[2][1] = u.z;
+                Result.data[0][1] = u.x;
+                Result.data[1][1] = u.y;
+                Result.data[2][1] = u.z;
 
-				Result.data[0][2] = -f.x;
-				Result.data[1][2] = -f.y;
-				Result.data[2][2] = -f.z;
+                Result.data[0][2] = -f.x;
+                Result.data[1][2] = -f.y;
+                Result.data[2][2] = -f.z;
 
-				Result.data[3][0] = -s.scalarProduct(eye);
-				Result.data[3][1] = -u.scalarProduct(eye);
-				Result.data[3][2] = f.scalarProduct(eye);
+                Result.data[3][0] = -s.scalarProduct(eye);
+                Result.data[3][1] = -u.scalarProduct(eye);
+                Result.data[3][2] = f.scalarProduct(eye);
 
-				return Result;
-			}
-	};
+                return Result;
+            }
+    };
 };
 #endif // CORE_H

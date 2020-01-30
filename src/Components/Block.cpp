@@ -18,7 +18,7 @@ Block::~Block()
 void Block::setState(const wind::Vector3& pos, const wind::Vector3& half)
 {
 	body->setPosition(pos);
-	body->setOrientation(0.0, 0.0, 0.0, 0.0);
+	body->setOrientation(0.0, 0.1, 0.7, 0.0);
 	body->setVelocity(0.0, 0.0, 0.0);
 	body->setRotation(0.0, 0.0, 0.0);
 	halfSize = half;
