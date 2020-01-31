@@ -100,11 +100,11 @@ inline Vector3 getContactPoint(const Vector3& ptOnEdgeOne, const Vector3& firstA
 
 void Primitive::calculateInternals()
 {
-	if(body == nullptr)
-	{
-		std::cerr << "The bodies primitive is null" << std::endl;
-		return;
-	}
+    if(body == nullptr)
+    {
+        std::cerr << "The bodies primitive is null" << std::endl;
+        return;
+    }
 
     transform = body->getTransform();// * offset;
 }
@@ -146,16 +146,16 @@ bool IntersectionTests::BoxAndBox(const Box& first, const Box& second)
 
 bool IntersectionTests::SphereAndHalfSpace(const Sphere& sphere, const Plane& plane)
 {
-	//Here we find the distance between the orgin point and sphere.
-	real ballDistance = plane.direction * sphere.getAxis(3) - sphere.radius;
+    //Here we find the distance between the orgin point and sphere.
+    real ballDistance = plane.direction * sphere.getAxis(3) - sphere.radius;
 
-	//Now we check for the intersection
+    //Now we check for the intersection
     return ballDistance <= plane.offset;
 }
 
 bool IntersectionTests::SphereAndSphere(const Sphere& first, const Sphere& second)
 {
-	//Firstly we find the vector between the objects
+    //Firstly we find the vector between the objects
     Vector3 midline = first.getAxis(3) - second.getAxis(3);
 
     // See if it is large enough.
@@ -270,56 +270,52 @@ unsigned CollisionDetection::SphereAndTruePlane(const Sphere& sphere, const Plan
 
 unsigned CollisionDetection::BoxAndHalfSpace(const Box& box, const Plane& plane, CollisionData& data)
 {
-    if(data.contactsLeft <= 0)
-    {
-        return 0;
-    }
-
-    //Here we check to see if the box is intersecting with the halfspace.
-    if(!IntersectionTests::BoxAndHalfSpace(box, plane))
-    {
-        return 0;
-    }
-
-    //Okay so the box has collided with the halfspace now we need to fine the intersection points.
-    //So if the box is resting on a plane there are either 2 or 4 vertices touching.
-
-    //Here we go through each combination of + and - for each half size.
-    real mults[8][3] = {{1, 1, 1}, {-1, 1, 1}, {1, -1, 1}, {-1, -1, 1}, {1, 1, -1}, {-1, 1, -1}, {1, -1, -1}, {-1, -1, -1}};
-
-    Contact* contact = data.contacts;
     unsigned contactsUsed = 0;
-    for(int i = 0; i < 8; i++)
+    if (data.contactsLeft > 0)
     {
-        //First we need to calculate the position of each vertex point.
-        Vector3 vertexPos(mults[i][0], mults[i][1], mults[i][2]);
-        vertexPos.componentProductUpdate(box.halfSize);
-        vertexPos = box.transform.transform(vertexPos);
-
-        //Next we calculate the distance from the plane to the box.
-        real vertexDistance = vertexPos * plane.direction;
-
-        //Next we compare this plane's distance.
-        if(vertexDistance <= plane.offset)
+        //Here we check to see if the box is intersecting with the halfspace.
+        if (IntersectionTests::BoxAndHalfSpace(box, plane))
         {
-            //Here we are creating the contact data.
+            //Okay so the box has collided with the halfspace now we need to fine the intersection points.
+            //So if the box is resting on a plane there are either 2 or 4 vertices touching.
 
-            //The contact is halfway between the vertex the plane. We multiply the direction by hold the separation distance and as the vertex
-            contact->contactPoint = plane.direction;
-            contact->contactPoint *= (vertexDistance - plane.offset);
-            contact->contactPoint = vertexPos;
-            contact->contactNormal = plane.direction;
-            contact->penetration = plane.offset - vertexDistance;
+            //Here we go through each combination of + and - for each half size.
+            real mults[8][3] = { {1, 1, 1}, {-1, 1, 1}, {1, -1, 1}, {-1, -1, 1}, {1, 1, -1}, {-1, 1, -1}, {1, -1, -1}, {-1, -1, -1} };
 
-            //Here we write the appropriate data.
-            contact->setContactData(box.body, nullptr, data.friction, data.restitution);
-
-            //Like normal we move onto the next contact.
-            contact++;
-            contactsUsed++;
-            if(contactsUsed == (unsigned)data.contactsLeft)
+            Contact* contact = data.contacts;
+            for (int i = 0; i < 8; i++)
             {
-                return contactsUsed;
+                //First we need to calculate the position of each vertex point.
+                Vector3 vertexPos(mults[i][0], mults[i][1], mults[i][2]);
+                vertexPos.componentProductUpdate(box.halfSize);
+                vertexPos = box.transform.transform(vertexPos);
+
+                //Next we calculate the distance from the plane to the box.
+                real vertexDistance = vertexPos * plane.direction;
+
+                //Next we compare this plane's distance.
+                if (vertexDistance <= plane.offset)
+                {
+                    //Here we are creating the contact data.
+
+                    //The contact is halfway between the vertex the plane. We multiply the direction by hold the separation distance and as the vertex
+                    contact->contactPoint = plane.direction;
+                    contact->contactPoint *= (vertexDistance - plane.offset);
+                    contact->contactPoint = vertexPos;
+                    contact->contactNormal = plane.direction;
+                    contact->penetration = plane.offset - vertexDistance;
+
+                    //Here we write the appropriate data.
+                    contact->setContactData(box.body, nullptr, data.friction, data.restitution);
+
+                    //Like normal we move onto the next contact.
+                    contact++;
+                    contactsUsed++;
+                    if (contactsUsed == (unsigned)data.contactsLeft)
+                    {
+                        return contactsUsed;
+                    }
+                }
             }
         }
     }
@@ -335,7 +331,7 @@ unsigned CollisionDetection::BoxAndSphere(const Box& box, const Sphere& sphere, 
         return 0;
     }
 
-	Vector3 closestPointWorld(0.0, 0.0, 0.0);
+    Vector3 closestPointWorld(0.0, 0.0, 0.0);
 
     //Here we first get the centre of the sphere and box.
     Vector3 centre = sphere.getAxis(3);
@@ -503,7 +499,7 @@ void fillPointBoxOnBox(const Box& first, const Box& second, const Vector3& toCen
 unsigned CollisionDetection::BoxAndBox(const Box& first, const Box& second, CollisionData& data)
 {
     if(!IntersectionTests::BoxAndBox(first, second))
-	{
+    {
         return 0;
     }
 
@@ -612,7 +608,7 @@ unsigned CollisionDetection::BoxAndBox(const Box& first, const Box& second, Coll
 
         //Here we get the contact point of the edge to edge contact.
         Vector3 vertex = getContactPoint(ptOnEdgeOne, firstAxis, first.halfSize[firstAxisIndex],
-											ptOnEdgeTwo, secondAxis, second.halfSize[secondAxisIndex], bestSingleAxis > 2);
+                                            ptOnEdgeTwo, secondAxis, second.halfSize[secondAxisIndex], bestSingleAxis > 2);
 
         //Now we create a contact normal.
         Contact* contact = data.contacts;
@@ -631,7 +627,7 @@ unsigned CollisionDetection::BoxAndBox(const Box& first, const Box& second, Coll
 unsigned PlayerGeometry::BoxAndBox(const Box& first, const Box& second, CollisionData& data)
 {
     if(!IntersectionTests::BoxAndBox(first, second))
-	{
+    {
         return 0;
     }
 
@@ -740,7 +736,7 @@ unsigned PlayerGeometry::BoxAndBox(const Box& first, const Box& second, Collisio
 
         //Here we get the contact point of the edge to edge contact.
         Vector3 vertex = getContactPoint(ptOnEdgeOne, firstAxis, first.halfSize[firstAxisIndex],
-											ptOnEdgeTwo, secondAxis, second.halfSize[secondAxisIndex], bestSingleAxis > 2);
+                                            ptOnEdgeTwo, secondAxis, second.halfSize[secondAxisIndex], bestSingleAxis > 2);
 
         //Now we create a contact normal.
         Contact* contact = data.contacts;
